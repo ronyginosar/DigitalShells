@@ -15,32 +15,37 @@ function draw() {
 
   // settings for ellipses
   let w = 1;
-  let h = 10; 
+  let h = 1; 
   ellipseMode(CORNER);
   noFill();
   stroke(1);
 
   // vars of ellipses
   let spiralLoopNumber = 3*PI;
-  let spiralDensity = 0.5*PI; // the higher the more dense
-  let spiralRadiusDelta = 0.25*PI; //1.025;
+  let spiralDensity = 0.9*PI; // the higher the more dense
+  let spiralRadiusDelta = 1.025*PI; //1.025;
   let startingAngle = 0;
-
+  let counter = 0;
   //draw ellipses along Fibonacci curve
   beginShape();
-  for (let radius = 0; radius < 10; radius +=1)
+  for (let radius = 10; radius < 100; radius +=10)
   {
+    // let radius = 1;
     for (let angle = startingAngle ; 
         // angle < (spiralLoopNumber-startingAngle); 
         angle < 250; 
         angle += spiralDensity) 
     {
+      print("counter " + counter);
+      counter++;
       [x,y] = logarithmicSpiral(radius,(angle*PI/100));
-      curveVertex(x, y);
+      // curveVertex(x, y);
+      point(x,y);
       ellipse(x, y, w, h);
       w+=2;
       h+=2; 
       radius+=spiralRadiusDelta; // * or +
+      // stroke(counter);
       // break;
 
       // Sequence(
@@ -63,8 +68,9 @@ function draw() {
 
 function logarithmicSpiral(radius,angle){
  // https://mathworld.wolfram.com/LogarithmicSpiral.html
-  x = radius * cos(angle);
-  y = radius * sin(angle);
+ // flip sin and cos for a flipped spiral
+  x = radius * sin(angle);
+  y = radius * cos(angle);
   return [x,y];
 }
 

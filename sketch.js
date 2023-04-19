@@ -1,21 +1,12 @@
 var Fibonacci = [];
-let m=0.2;
-// r = 1;
-// angle = 1;
 let centerX = 0;
 let centerY = 0;
 
 function setup() {
-
-  background(220);
-  // b=a*(abs(exp(2*m*PI))-1)/(exp(2*m*PI)+1)*sqrt(1+k*k);
-  b=10;
-  xValue1 = 0;
-  yValue1 = 0;
-
   createCanvas(windowWidth, windowHeight);
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
+  background(220);
 }
 
 function draw() {
@@ -25,67 +16,28 @@ function draw() {
   // y = 46;
   // w = 30;
   // h = 70; 
-  // ellipse( x, y, w, h);
+  // ellipse(x, y, w, h);
   
   //along fibonacchi curve
   noFill();
   stroke(1);
-  // [xValue, yValue] = logarithmicSpiral(r,angle);
-  // point(xValue, yValue);
-  // r += 1;
-  // angle +=1;
-
-  // let increment = 0.1;
   noLoop();
-  // beginShape();
-
-  // for (let r = 0; r < 50; r += 1) {
-  for (let b = 1; b < 2*PI; b +=1) {
-    // b = 1;
-    for (let a = 0; a < 5*PI; a += 0.1) {
-      // r=10;
-      // a = 50;
+  beginShape();
+  for (let b = 1; b < 2; b +=1) {
+    for (let a = 0; a < 50*PI; a += 0.1) {
       [x,y] = logarithmicSpiral(b,a);
-      // vertex(0, 0, xValue, yValue, 0 ,TWO_PI);
       // push();
-      // point(xValue2, yValue2);
-      // line(xValue1, yValue1, xValue2, yValue2);
-      // xValue1 = xValue2;
-      // yValue1 = xValue2;
-      // pop();
-      [x, y] = polarToCartesian(b * a, a);
-      point(x, y);
+      // vertex(0, 0, xValue, yValue, 0 ,TWO_PI);
+      // pop();      
+      curveVertex(x, y);
       b*=1.025;
     }
   }
   endShape();
-
-  // print("hi");
-
-  // beginShape();
-  // shell2();
-  // endShape();
-
-
-  // const b = 10;
-
-  //   beginShape();
-  //   for(let theta = 1; theta < 4*PI ; theta += 0.1) {
-  //       [x, y] = polarToCartesian(b * theta, theta);
-  //       point(x, y);
-  //   }
-  //   endShape();
-
 }
 
-function polarToCartesian(r, theta) {
-  x = r * cos(theta);
-  y = r * sin(theta);
-  return [x,y];
-}
 
 function logarithmicSpiral(radius,angle){
- // maybe use r = a * exp(-b * t)
  // https://mathworld.wolfram.com/LogarithmicSpiral.html
   x = radius * cos(angle);
   y = radius * sin(angle);
@@ -107,20 +59,6 @@ function shell1(){
     }
     
   }
-
-  // for(let a=0;a<2*PI;a+=0.1){
-  //   for(let t= 0;t<9*PI;t+=0.1){
-  //     // a = 45;
-  //     // t = 5;
-  //     x=(cos(a+t)*exp(t)*cos(t));
-  //     y=(cos(a+t)*exp(t)*sin(t));
-  //     push();
-  //     point(x,y);
-  //     pop();
-     
-  //   }
-    
-  // }
 }
 
 function shell2(){

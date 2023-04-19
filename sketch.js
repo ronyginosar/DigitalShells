@@ -2,22 +2,24 @@ var Fibonacci = [];
 let m=0.2;
 // r = 1;
 // angle = 1;
+let centerX = 0;
+let centerY = 0;
 
 function setup() {
-  createCanvas(400, 400);
+
   background(220);
   // b=a*(abs(exp(2*m*PI))-1)/(exp(2*m*PI)+1)*sqrt(1+k*k);
   b=10;
   xValue1 = 0;
   yValue1 = 0;
+
+  createCanvas(windowWidth, windowHeight);
+	centerX = windowWidth*0.5;
+	centerY = windowHeight*0.5;
 }
 
 function draw() {
-  
-  translate(400/2, 400/2); // width height larger in vscode
-  // t=frameCount/200;
-  t=30;
-
+  translate(centerX,centerY);
   //circle
   // x = 56;
   // y = 46;
@@ -26,7 +28,7 @@ function draw() {
   // ellipse( x, y, w, h);
   
   //along fibonacchi curve
-  // noFill();
+  noFill();
   stroke(1);
   // [xValue, yValue] = logarithmicSpiral(r,angle);
   // point(xValue, yValue);
@@ -38,20 +40,25 @@ function draw() {
   // beginShape();
 
   // for (let r = 0; r < 50; r += 1) {
-  //   for (let a = 0; a < TWO_PI; a += 1) {
-  //     // r=10;
-  //     // a = 50;
-  //     [xValue2, yValue2] = logarithmicSpiral(r,a);
-  //     // vertex(0, 0, xValue, yValue, 0 ,TWO_PI);
-  //     // push();
-  //     // point(xValue2, yValue2);
-  //     line(xValue1, yValue1, xValue2, yValue2);
-  //     xValue1 = xValue2;
-  //     yValue1 = xValue2;
-  //     // pop();
-  //   }
-  // }
-  // endShape(CLOSE);
+  for (let b = 1; b < 2*PI; b +=1) {
+    // b = 1;
+    for (let a = 0; a < 5*PI; a += 0.1) {
+      // r=10;
+      // a = 50;
+      [x,y] = logarithmicSpiral(b,a);
+      // vertex(0, 0, xValue, yValue, 0 ,TWO_PI);
+      // push();
+      // point(xValue2, yValue2);
+      // line(xValue1, yValue1, xValue2, yValue2);
+      // xValue1 = xValue2;
+      // yValue1 = xValue2;
+      // pop();
+      [x, y] = polarToCartesian(b * a, a);
+      point(x, y);
+      b*=1.025;
+    }
+  }
+  endShape();
 
   // print("hi");
 
@@ -59,24 +66,21 @@ function draw() {
   // shell2();
   // endShape();
 
-  // logarithmicSpiral(3,40);
 
-  const b = 10;
+  // const b = 10;
 
-    beginShape();
-    for(let theta = 1; theta < 5*PI ; theta += 0.1) {
-        [x, y] = polarToCartesian(b * theta, theta);
-        point(x, y);
-    }
-    endShape();
+  //   beginShape();
+  //   for(let theta = 1; theta < 4*PI ; theta += 0.1) {
+  //       [x, y] = polarToCartesian(b * theta, theta);
+  //       point(x, y);
+  //   }
+  //   endShape();
 
 }
 
 function polarToCartesian(r, theta) {
-  // return {
-  x= r * cos(theta);
-  y= r * sin(theta);
-  // };
+  x = r * cos(theta);
+  y = r * sin(theta);
   return [x,y];
 }
 
@@ -86,10 +90,6 @@ function logarithmicSpiral(radius,angle){
   x = radius * cos(angle);
   y = radius * sin(angle);
   return [x,y];
-
-  // angle = (i++) * PI/180;
-  // x2 = radius * cos(angle) + width/2;
-	// y2 = radius * sin(angle) + height/2;
 }
 
 function shell1(){
@@ -148,3 +148,17 @@ function shell2(){
 
 // https://twitter.com/a_mcsquared/status/1156588986493743104
 // Sequence(Ellipse((0.1t π / 100; t π / 100), (1.9t π / 100; t π / 100), t π / 100), t, 0, 250)
+
+
+// function draw() {
+// 	//circle(mouseX, mouseY, 20);
+// 	push()
+// 	translate(width/2, height/2)
+// 	circle(
+// 		r*sin(frameCount/10),
+//     r*cos(frameCount/10),
+// 		10
+// 		)
+// 	r++
+// 	pop()
+// }

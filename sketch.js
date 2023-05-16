@@ -16,15 +16,19 @@ function draw() {
   // settings for ellipses
   let w = 1;
   let h = 1; 
-  ellipseMode(CORNER);
+  // ellipseMode(CORNER);
   noFill();
-  stroke(1);
+  stroke(3);
+
+
 
   // vars of ellipses
-  let spiralLoopNumber = 3*PI;
-  let spiralDensity = 0.9*PI; // the higher the more dense
+  let spiralLoopNumber = 300*PI;
+  let spiralDensity = 1.9*PI; // the higher the more dense
   let spiralRadiusDelta = 1.025*PI; //1.025;
-  let startingAngle = 0;
+  let startingAngle = 50;
+  // degree to polar: 50/360 * 2*PI ??
+  line(0,0,30/360 * 2*PI*10,30/360 * 2*PI*10);
   let counter = 0;
   //draw ellipses along Fibonacci curve
   beginShape();
@@ -32,8 +36,8 @@ function draw() {
   {
     // let radius = 1;
     for (let angle = startingAngle ; 
-        // angle < (spiralLoopNumber-startingAngle); 
-        angle < 250; 
+        angle < (spiralLoopNumber-startingAngle); 
+        // angle < 250; 
         angle += spiralDensity) 
     {
       print("counter " + counter);
@@ -41,7 +45,7 @@ function draw() {
       [x,y] = logarithmicSpiral(radius,(angle*PI/100));
       // curveVertex(x, y);
       point(x,y);
-      ellipse(x, y, w, h);
+      // ellipse(x, y, w, h);
       w+=2;
       h+=2; 
       radius+=spiralRadiusDelta; // * or +

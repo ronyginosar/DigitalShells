@@ -1,4 +1,4 @@
-var Fibonacci = [];
+// center position canvas
 let centerX = 0;
 let centerY = 0;
 
@@ -6,7 +6,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
-  background(220);
+  background(200);
 }
 
 function draw() {
@@ -14,153 +14,74 @@ function draw() {
   noLoop();
 
   // settings for ellipses
-  let w = 1;
-  let h = 1; 
-  // ellipseMode(CORNER);
   noFill();
   stroke(3);
 
 
-
   // vars of ellipses
-  let spiralLoopNumber = 300*PI;
-  let spiralDensity = 1.9*PI; // the higher the more dense
-  let spiralRadiusDelta = 1.025*PI; //1.025;
-  let startingAngle = 50;
-  // degree to polar: 50/360 * 2*PI ??
-  line(0,0,30/360 * 2*PI*10,30/360 * 2*PI*10);
-  let counter = 0;
+
+  // TODO optional later is using the following instead of r loop:
+        // radius = a*exp(k*theta)
+        // curvature = (cos(alpha)/r), with k=tan(alpha)
+
+
   //draw ellipses along Fibonacci curve
   beginShape();
-  for (let radius = 10; radius < 100; radius +=10)
-  {
-    // let radius = 1;
-    for (let angle = startingAngle ; 
-        angle < (spiralLoopNumber-startingAngle); 
-        // angle < 250; 
-        angle += spiralDensity) 
+  // for (let radius = 0; radius < 100; radius +=1)
+  // {
+  //   // prints(radius);
+  //   push();
+  //   ellipseMode(RADIUS);
+  //   ellipse(0,0,radius);
+  //   pop();
+    for (let angle = 0 , radius = 0;
+        angle < 360,     radius < 100; // change to lower for 'cake slices'
+        angle += 10,     radius +=1) 
     {
-      print("counter " + counter);
-      counter++;
-      [x,y] = logarithmicSpiral(radius,(angle*PI/100));
+      // helperCircle(radius);
+      rad = degreesToRadians(angle); // logarithmicSpiral is based on radians
+      // convert the r,a to x,y
+      [x,y] = locationUponLogarithmicSpiral(radius,rad);
+      // draw spiral curve or just points:
       // curveVertex(x, y);
       point(x,y);
+      // draw ellipses along curve
       // ellipse(x, y, w, h);
-      w+=2;
-      h+=2; 
-      radius+=spiralRadiusDelta; // * or +
-      // stroke(counter);
-      // break;
-
-      // Sequence(
-        // Ellipse(
-        //   (0.1 t π / 100; t π / 100), 
-        //   (1.9 t π / 100; t π / 100), 
-        //   t π / 100), 
-        //   t, 
-        //   0, 
-        //   250)
-
-
+      // break; // break here for straight line if double loop
     }
-  // break;
-  }
+    // break; // break here for only 1 swirl if double loop
+  // }
   endShape();
-
 }
 
+function degreesToRadians(degrees){
+  // 1° × π/180 
+  radians = degrees * PI/180;
+  return radians;
+}
 
-function logarithmicSpiral(radius,angle){
+function helperCircle(radius){
+  // logarithmic spiral and an expanding circle centred at the origin to demonstrate that the angle between the tangents of the two curves at the points of intersection remains constant. Produced with WxMaxima.
+  push();
+  ellipseMode(RADIUS);
+  ellipse(0,0,radius);
+  pop();
+}
+
+function locationUponLogarithmicSpiral(radius,angle,flip=true){
  // https://mathworld.wolfram.com/LogarithmicSpiral.html
- // flip sin and cos for a flipped spiral
-  x = radius * sin(angle);
-  y = radius * cos(angle);
-  return [x,y];
+ // log spiral in radians is radius=a*exp(k*phi), k = tan(alpha) -> polar slope (polar slope angle)
+ // in cartesian: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+ // constant a is the rate of increase of the spiral
+ 
+
+if (flip){
+   // flip sin and cos for a flipped spiral
+    x = radius * sin(angle);
+    y = radius * cos(angle);
+} else {
+    y = radius * sin(angle);
+    x = radius * cos(angle);
 }
-
-
-// https://twitter.com/a_mcsquared/status/1156588986493743104
-// Sequence(Ellipse((0.1t π / 100; t π / 100), (1.9t π / 100; t π / 100), t π / 100), t, 0, 250)
-
-
-// function draw() {
-// 	//circle(mouseX, mouseY, 20);
-// 	push()
-// 	translate(width/2, height/2)
-// 	circle(
-// 		r*sin(frameCount/10),
-//     r*cos(frameCount/10),
-// 		10
-// 		)
-// 	r++
-// 	pop()
-// }
-
-
-// saved bugs:
-// // vars of ellipses
-// let spiralLoopNumber = 3*PI;
-// let spiralDensity = 0.09*PI; // the higher the more dense
-// let spiralRadiusDelta = 0.1; //1.025;
-// let startingAngle = 0;
-
-// //draw ellipses along Fibonacci curve
-// beginShape();
-// for (let radius = 0.1; radius < 1.9; radius +=0.1)
-// {
-//   for (let angle = startingAngle ; 
-//       // angle < (spiralLoopNumber-startingAngle); 
-//       angle < 250; 
-//       angle += spiralDensity) 
-//   {
-//     [x,y] = logarithmicSpiral(radius,(angle*PI/100));
-//     // curveVertex(x, y);
-//     ellipse(x, y, w, h);
-//     w+=2;
-//     h+=2; 
-//     radius+=spiralRadiusDelta; // * or +
-//     // break;
-//   }
-// }
-
-
-//
-// // vars of ellipses
-// let spiralLoopNumber = 3*PI;
-// let spiralDensity = 1;//*PI; // the higher the more dense
-// let spiralRadiusDelta = 0.1; //1.025;
-// let startingAngle = 0;
-
-// //draw ellipses along Fibonacci curve
-// beginShape();
-// for (let radius = 0.1; radius < 1.9; radius +=0.1)
-// {
-//   for (let angle = startingAngle ; 
-//       // angle < (spiralLoopNumber-startingAngle); 
-//       angle < 250; 
-//       angle += spiralDensity) 
-//   {
-//     [x,y] = logarithmicSpiral(radius,(angle*PI/100));
-//     // curveVertex(x, y);
-//     ellipse(x, y, w, h);
-//     w+=2;
-//     h+=2; 
-//     radius+=spiralRadiusDelta; // * or +
-//     // break;
-
-//     // Sequence(
-//       // Ellipse(
-//       //   (0.1 t π / 100; t π / 100), 
-//       //   (1.9 t π / 100; t π / 100), 
-//       //   t π / 100), 
-//       //   t, 
-//       //   0, 
-//       //   250)
-
-
-//   }
-// // break;
-// }
-// endShape();
-
-// }
+return [x,y];
+}

@@ -1,9 +1,15 @@
 // center position canvas
-let centerX = 0;
-let centerY = 0;
+let centerX,centerY = 0;
+// let centerY = 0;
 let slider_1;
 let slider_2;
 let slider_3;
+let w_increase = 2;
+let h_increase = 1.8;
+let w,h = 1;
+// let h = 1;
+let cycle_degrees = 360; // change to lower for 'cake slices'
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -11,7 +17,7 @@ function setup() {
 	centerY = windowHeight*0.5;
   background(200);
   slider_1 = drawSlider(1);
-  // slider_2 = drawSlider(2);
+  slider_2 = drawSlider(2);
   // slider_3 = drawSlider(3);
 }
 
@@ -33,17 +39,17 @@ function drawSlider(idx, min=0, max=80, val=10, step=1){
 function draw() {
   translate(centerX,centerY);
   noLoop();
+  background(200);
 
   // settings for ellipses
   noFill();
   stroke(3);
   // ellipseMode(CORNER);
 
-  cycle_degrees = 360; // change to lower for 'cake slices'
   // polar_slope = 10;
 
   //draw ellipses along Fibonacci curve
-  // drawSpiralRadiusAngle(cycle_degrees);
+  // drawSpiralRadiusAngle();
 
   drawSpiralFullEquation();
 }
@@ -86,7 +92,12 @@ if (flip){
 return [x,y];
 }
 
-function drawSpiralRadiusAngle(cycle_degrees){
+function increaseWH(){
+  w += w_increase;
+  h = w*h_increase;
+}
+
+function drawSpiralRadiusAngle(){
   w = 1;
   h = 1;
   beginShape();
@@ -104,8 +115,7 @@ function drawSpiralRadiusAngle(cycle_degrees){
     // point(x,y);
     // draw ellipses along curve
     ellipse(x, y, w, h);
-    w +=2;
-    h = w*1.8;
+    increaseWH();
   }
   endShape();
 }
@@ -118,20 +128,20 @@ function drawSpiralFullEquation(){
   // in cartesian: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
     for (let angle = 0           ;
       angle < cycle_degrees;
-      angle += 10          ) 
+      angle += 3          ) 
     {
       // radius=a*exp(k*phi)
-      a = -5; // flip will be based upon a sign. "rate of increase of the spiral"
+      a = slider_2.value(); // flip will be based upon a sign. "rate of increase of the spiral"
+      a *= -1;
       alfa = slider_1.value(); // polar slope angle
       k = tan(degreesToRadians(alfa)); // polar slope
       phi = degreesToRadians(angle);
-      radius = a*exp(k*phi);
-      [x,y] = locationUponLogarithmicSpiral(radius, phi, flip=false);
+      r = a*exp(k*phi);
+      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=false);
       // point(x,y);
       // curveVertex(x,y);
       ellipse(x, y, w, h);
-      w +=2;
-      h = w*1.8;
+      increaseWH();
     }
   endShape();
 }

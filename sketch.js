@@ -18,7 +18,7 @@ function setup() {
   background(200);
   slider_1 = drawSlider(1);
   slider_2 = drawSlider(2);
-  // slider_3 = drawSlider(3);
+  slider_3 = drawSlider(3, 0, 360*10, 360, 10);
 }
 
 function drawSlider(idx, min=0, max=80, val=10, step=1){
@@ -50,6 +50,7 @@ function draw() {
 
   //draw ellipses along Fibonacci curve
   // drawSpiralRadiusAngle();
+  cycle_degrees = slider_3.value()
 
   drawSpiralFullEquation();
 }
@@ -131,16 +132,24 @@ function drawSpiralFullEquation(){
       angle += 3          ) 
     {
       // radius=a*exp(k*phi)
-      a = slider_2.value(); // flip will be based upon a sign. "rate of increase of the spiral"
-      a *= -1;
-      alfa = slider_1.value(); // polar slope angle
+      // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
+      a = slider_2.value(); // flip will be based upon a sign. - spiral constant
+      // a *= -1;
+      // todo add -1
+      alfa = slider_1.value(); // polar slope angle - golden/fibonacci will be +- 17. "rate of increase of the spiral"
+      // alfa the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. α is a constant for any given logarithmic spiral.
+      // k is 
+
+      // Curvature = cos(alfa)/r
       k = tan(degreesToRadians(alfa)); // polar slope
       phi = degreesToRadians(angle);
+      // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
+
       r = a*exp(k*phi);
       [x,y] = locationUponLogarithmicSpiral(r, phi, flip=false);
-      // point(x,y);
+      point(x,y);
       // curveVertex(x,y);
-      ellipse(x, y, w, h);
+      // ellipse(x, y, w, h);
       increaseWH();
     }
   endShape();

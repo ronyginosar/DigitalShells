@@ -16,8 +16,8 @@ function setup() {
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
   background(200);
-  slider_1 = drawSlider(1);
-  slider_2 = drawSlider(2);
+  slider_1 = drawSlider(1,0.0034,50,0.034,0.01);
+  slider_2 = drawSlider(2,0.0034,50,0.034,0.01);
   slider_3 = drawSlider(3, 0, 360*10, 360, 10);
 }
 
@@ -129,7 +129,7 @@ function drawSpiralFullEquation(){
   // in cartesian: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
     for (let angle = 0           ;
       angle < cycle_degrees;
-      angle += 3          ) 
+      angle += 10          ) 
     {
       // radius=a*exp(k*phi)
       // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
@@ -147,9 +147,9 @@ function drawSpiralFullEquation(){
 
       r = a*exp(k*phi);
       [x,y] = locationUponLogarithmicSpiral(r, phi, flip=false);
-      point(x,y);
+      // point(x,y);
       // curveVertex(x,y);
-      // ellipse(x, y, w, h);
+      ellipse(x, y, w, h);
       increaseWH();
     }
   endShape();

@@ -6,6 +6,7 @@ let slider_spiral_constant;
 let slider_cycle_degrees;
 let slider_increments;
 let box_shell_flip;
+let box_shell_flip_double;
 let w_increase = 2;
 let h_increase = 1.8;
 let w,h = 1;
@@ -16,6 +17,7 @@ let isDrawSpiralCurve = false;
 let isDrawSpiralPoints = false;
 let isDrawSpiralShapes = true;
 let isShellFlipped = false;
+let isShellDoubleFlip = false;
 
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 
@@ -34,7 +36,8 @@ function setup() {
   slider_spiral_constant = drawSlider(2,0.034,50,36.34,0.01);
   slider_cycle_degrees = drawSlider(3, 0, 360*10, 360, 10);
   slider_increments = drawSlider(4, 0, 15, 3, 0.5);
-  box_shell_flip = drawCheckBox(5);
+  box_shell_flip = drawCheckBox(5, 'flip');
+  box_shell_flip_double = drawCheckBox(6, 'double flip');
 }
 
 function drawSlider(idx, min=0, max=80, val=10, step=1){
@@ -54,25 +57,13 @@ function drawSlider(idx, min=0, max=80, val=10, step=1){
 }
 
 
-function drawCheckBox(idx){
-  checkbox = createCheckbox('flip', false);
-  checkbox.changed(checkedEvent);
+function drawCheckBox(idx, txt){
+  checkbox = createCheckbox(txt, false);
+  checkbox.changed(changeCheckBox);
   checkbox.position(10, 20*idx+5);
-  // checkbox.style('width', '60px');
   return checkbox;
 }
 
-function checkedEvent() {
-  if (checkbox.checked()) {
-    console.log('flipping!');
-    isShellFlipped = true;
-    redraw();
-  } else {
-    console.log('un-flipped!');
-    isShellFlipped = false;
-    redraw();
-  }
-}
 
 function draw() {
   translate(centerX,centerY);
@@ -96,6 +87,21 @@ function draw() {
 }
 
 function mouseReleased() {
+  redraw();
+}
+
+function changeCheckBox(){
+  if (box_shell_flip_double.checked())
+  {
+    isShellDoubleFlip = true;
+  } else {
+    isShellDoubleFlip = false;
+  }
+  if (box_shell_flip.checked()){
+    isShellFlipped = true;
+  } else {
+    isShellFlipped = false;
+  }
   redraw();
 }
 
@@ -196,7 +202,8 @@ function drawSpiralFullEquation(){
 
       // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
       r = spiral_constant * exp(polar_slope * phi);
-      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=false);
+
+      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=isShellDoubleFlip);
 
       if (isDrawSpiralPoints){
         point(x,y);

@@ -1,32 +1,47 @@
 // center position canvas
 let centerX,centerY = 0;
 // let centerY = 0;
-let slider_1;
-let slider_2;
-let slider_3;
+let slider_polar_slope;
+let slider_spiral_constant;
+let slider_cycle_degrees;
+let box_shell_flip;
 let w_increase = 2;
 let h_increase = 1.8;
 let w,h = 1;
 // let h = 1;
 let cycle_degrees = 360; // change to lower for 'cake slices'
+let is3D = false;
+let isDrawSpiralCurve = false;
+let isDrawSpiralPoints = false;
+let isDrawSpiralShapes = true;
+let isShellFlipped = false;
+
+// feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  if(is3D){
+    createCanvas(windowWidth, windowHeight, WEBGL);
+  } else {
+    createCanvas(windowWidth, windowHeight);
+  }
+  
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
   background(200);
-  slider_1 = drawSlider(1,0.0034,50,0.034,0.01);
-  slider_2 = drawSlider(2,0.0034,50,0.034,0.01);
-  slider_3 = drawSlider(3, 0, 360*10, 360, 10);
+  slider_polar_slope = drawSlider(1,0.034,20,10.34,0.01);
+  slider_spiral_constant = drawSlider(2,0.034,20,10.34,0.01);
+  slider_cycle_degrees = drawSlider(3, 0, 360*10, 360, 10);
+  box_shell_flip = drawCheckBox(4);
 }
 
 function drawSlider(idx, min=0, max=80, val=10, step=1){
   let slider = createSlider(min, max, val, step);
   slider.position(10, 20*idx);
-  slider.style('width', '380px');
+  slider.style('width', '180px');
   
   let label = createSpan(slider.value());
+  // TODO add background and title and font
   label.position(slider.x + slider.width + 10, slider.y);
   let onInput = () => {
     label.html(slider.value());
@@ -36,21 +51,44 @@ function drawSlider(idx, min=0, max=80, val=10, step=1){
   return slider
 }
 
+
+function drawCheckBox(idx){
+  checkbox = createCheckbox('flip', false);
+  checkbox.changed(checkedEvent);
+  checkbox.position(10, 20*idx+5);
+  // checkbox.style('width', '60px');
+  return checkbox;
+}
+
+function checkedEvent() {
+  if (checkbox.checked()) {
+    console.log('flipping!');
+    isShellFlipped = true;
+    redraw();
+  } else {
+    console.log('un-flipped!');
+    isShellFlipped = false;
+    redraw();
+  }
+}
+
 function draw() {
   translate(centerX,centerY);
   noLoop();
   background(200);
+
+  if (is3D){
+    orbitControl();
+  }
 
   // settings for ellipses
   noFill();
   stroke(3);
   // ellipseMode(CORNER);
 
-  // polar_slope = 10;
-
-  //draw ellipses along Fibonacci curve
+  // draw ellipses along Fibonacci curve
   // drawSpiralRadiusAngle();
-  cycle_degrees = slider_3.value()
+  cycle_degrees = slider_cycle_degrees.value()
 
   drawSpiralFullEquation();
 }
@@ -122,34 +160,47 @@ function drawSpiralRadiusAngle(){
 }
 
 function drawSpiralFullEquation(){
-  w = 1;
+  w = 1; // TODO slider these
   h = 1;
   beginShape();
-  // log spiral in radians is radius=a*exp(k*phi), k = tan(alpha) -> polar slope (polar slope angle)
-  // in cartesian: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+  // log spiral in radians is radius=a*exp(k*phi), 
+  
+  
     for (let angle = 0           ;
       angle < cycle_degrees;
       angle += 10          ) 
     {
       // radius=a*exp(k*phi)
       // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
-      a = slider_2.value(); // flip will be based upon a sign. - spiral constant
-      // a *= -1;
-      // todo add -1
-      alfa = slider_1.value(); // polar slope angle - golden/fibonacci will be +- 17. "rate of increase of the spiral"
+      spiral_constant = slider_spiral_constant.value(); // - spiral constant, initial radius
+
+      if (isShellFlipped){
+        // flip is based upon the spiral constant sign
+        spiral_constant *= -1; 
+      }
+      polar_slope_angel = slider_polar_slope.value(); // alpha - polar slope angle - golden/fibonacci will be +- 17. "rate of increase of the spiral"
       // alfa the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. α is a constant for any given logarithmic spiral.
-      // k is 
+      // k = tan(alpha) -> polar slope (polar slope angle)
 
       // Curvature = cos(alfa)/r
-      k = tan(degreesToRadians(alfa)); // polar slope
-      phi = degreesToRadians(angle);
+      polar_slope = tan(degreesToRadians(polar_slope_angel)); // k - polar slope, growth factor
+      
       // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
+      phi = degreesToRadians(angle);
 
-      r = a*exp(k*phi);
+      // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+      r = spiral_constant * exp(polar_slope * phi);
       [x,y] = locationUponLogarithmicSpiral(r, phi, flip=false);
-      // point(x,y);
-      // curveVertex(x,y);
-      ellipse(x, y, w, h);
+
+      if (isDrawSpiralPoints){
+        point(x,y);
+      }
+      if (isDrawSpiralCurve){
+        curveVertex(x,y);
+      }
+      if (isDrawSpiralShapes){
+        ellipse(x, y, w, h);
+      }
       increaseWH();
     }
   endShape();

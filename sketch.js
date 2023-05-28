@@ -18,6 +18,7 @@ let isDrawSpiralPoints = false;
 let isDrawSpiralShapes = true;
 let isShellFlipped = false;
 let isShellDoubleFlip = false;
+let saveGif = false;
 
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 
@@ -31,6 +32,7 @@ function setup() {
   
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
+  guiY = windowHeight*0.7 ;
   background(200);
   slider_polar_slope = drawSlider(1,0.034,50,8.34,0.01);
   slider_spiral_constant = drawSlider(2,0.034,50,36.34,0.01);
@@ -38,11 +40,18 @@ function setup() {
   slider_increments = drawSlider(4, 0, 15, 3, 0.5);
   box_shell_flip = drawCheckBox(5, 'flip');
   box_shell_flip_double = drawCheckBox(6, 'double flip');
+
+  // if (saveGif){
+  //   // https://www.npmjs.com/package/p5.createloop
+  //   // frameRate(30)
+  //   // createLoop({duration:3, gif:true})
+  //   // see link for full needs
+  // }
 }
 
 function drawSlider(idx, min=0, max=80, val=10, step=1){
   let slider = createSlider(min, max, val, step);
-  slider.position(10, 20*idx);
+  slider.position(10, guiY + 20*idx);
   slider.style('width', '180px');
   
   let label = createSpan(slider.value());
@@ -51,19 +60,16 @@ function drawSlider(idx, min=0, max=80, val=10, step=1){
   let onInput = () => {
     label.html(slider.value());
   };
-
   slider.input(onInput);
   return slider
 }
 
-
 function drawCheckBox(idx, txt){
   checkbox = createCheckbox(txt, false);
   checkbox.changed(changeCheckBox);
-  checkbox.position(10, 20*idx+5);
+  checkbox.position(10, guiY + 20*idx+5);
   return checkbox;
 }
-
 
 function draw() {
   translate(centerX,centerY);
@@ -84,6 +90,8 @@ function draw() {
   
 
   drawSpiralFullEquation();
+
+  
 }
 
 function mouseReleased() {

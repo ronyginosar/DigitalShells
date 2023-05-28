@@ -4,6 +4,7 @@ let centerX,centerY = 0;
 let slider_polar_slope;
 let slider_spiral_constant;
 let slider_cycle_degrees;
+let slider_increments;
 let box_shell_flip;
 let w_increase = 2;
 let h_increase = 1.8;
@@ -29,10 +30,11 @@ function setup() {
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
   background(200);
-  slider_polar_slope = drawSlider(1,0.034,20,10.34,0.01);
-  slider_spiral_constant = drawSlider(2,0.034,20,10.34,0.01);
+  slider_polar_slope = drawSlider(1,0.034,50,8.34,0.01);
+  slider_spiral_constant = drawSlider(2,0.034,50,36.34,0.01);
   slider_cycle_degrees = drawSlider(3, 0, 360*10, 360, 10);
-  box_shell_flip = drawCheckBox(4);
+  slider_increments = drawSlider(4, 0, 15, 3, 0.5);
+  box_shell_flip = drawCheckBox(5);
 }
 
 function drawSlider(idx, min=0, max=80, val=10, step=1){
@@ -88,7 +90,7 @@ function draw() {
 
   // draw ellipses along Fibonacci curve
   // drawSpiralRadiusAngle();
-  cycle_degrees = slider_cycle_degrees.value()
+  
 
   drawSpiralFullEquation();
 }
@@ -162,13 +164,17 @@ function drawSpiralRadiusAngle(){
 function drawSpiralFullEquation(){
   w = 1; // TODO slider these
   h = 1;
+
+  cycle_degrees = slider_cycle_degrees.value();
+  angle_increments = slider_increments.value();
+
   beginShape();
   // log spiral in radians is radius=a*exp(k*phi), 
   
   
-    for (let angle = 0           ;
+    for (let angle = 0     ;
       angle < cycle_degrees;
-      angle += 10          ) 
+      angle += angle_increments ) 
     {
       // radius=a*exp(k*phi)
       // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)

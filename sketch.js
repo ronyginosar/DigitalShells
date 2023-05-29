@@ -19,6 +19,14 @@ let isDrawSpiralShapes = true;
 let isShellFlipped = false;
 let isShellDoubleFlip = false;
 let saveGif = false;
+// let guiY = 1;
+
+
+// let myNumber = 100;
+// let myChoice = ['one', 'two', 'three'];
+var visible = true;
+var gui;
+var myColor = 200;
 
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 // todo 3d 
@@ -45,6 +53,10 @@ function setup() {
   slider_increments = drawSlider(4, 0, 15, 3, 0.5);
   box_shell_flip = drawCheckBox(5, 'flip');
   box_shell_flip_double = drawCheckBox(6, 'double flip');
+
+  gui = createGui();
+  gui.addGlobals('myColor');
+
 
   // if (saveGif){
   //   // see link for full needs
@@ -80,7 +92,8 @@ function drawCheckBox(idx, txt){
 function draw() {
   translate(centerX,centerY);
   noLoop();
-  background(255);
+  
+  background(myColor);
 
   if (is3D){
     orbitControl();

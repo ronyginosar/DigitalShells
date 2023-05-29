@@ -1,25 +1,29 @@
 // center position canvas
 let centerX,centerY = 0;
-let w_increase = 2;
-let h_increase = 1.8;
-let w,h = 1;
-let is3D = false;
+let is3D = true;
 let saveGif = false;
-  // ellipseMode(CORNER);
+let z = 0;
 
-var visible = true;
 var gui;
 
-let params = {
 
-  bgColor: '#ebe6f5',  
+// todo 3d 
+// todo zoom out
+// todo export pngs
+// todo  - can params change within the shell?
+// todo bool alpha bg
+
+
+let params = {
+  // https://github.com/bitcraftlab/p5.gui/tree/master
+  bgColor: '#d8ecf8',  
 
   isShellFlipped: false,
   isShellDoubleFlip: false,
 
-  isDrawSpiralCurve :   false,
-  isDrawSpiralPoints:   false,
-  isDrawSpiralShapes:   true,
+  isDrawSpiralCurve : false,
+  isDrawSpiralPoints: false,
+  isDrawSpiralShapes: true,
 
   polar_slope:8.034,
   polar_slopeMin:0,
@@ -39,16 +43,28 @@ let params = {
   cycle_degrees: 360,
   cycle_degreesMin : 0,
   cycle_degreesMax : 360*10,
-  cycle_degreesStep: 10,  
-}
+  cycle_degreesStep: 10,
+  
+  width_increase: 2,
+  width_increaseMin : 0.1,
+  width_increaseMax : 10,
+  width_increaseStep: 0.1,
 
-// feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
-// todo 3d 
-// todo zoom out
-// todo more params?
-// todo export pngs
-// todo  - can params change within the shell?
-// todo click to disappear gui
+  height_increase: 1.8,
+  height_increaseMin : 0.1,
+  height_increaseMax : 10,
+  height_increaseStep: 0.1,  
+
+  fillShapeBackground: false,
+  transparentBackground: false,
+
+  // scale
+  zoom: 1,
+  zoomMin: 0.0001,
+  zoomMax: 3,
+  zoomStep: 0.0001,
+
+}
 
 function setup() {
   if(is3D){
@@ -56,36 +72,48 @@ function setup() {
   } else {
     createCanvas(windowWidth, windowHeight);
   }
-  
-	centerX = windowWidth*0.5;
-	centerY = windowHeight*0.5;
 
-  gui = createGui();
+  gui = createGui("Digital Shells");
   gui.addObject(params);
 
-  // if (saveGif){
-  //   // see link for full needs
-  //   // https://www.npmjs.com/package/p5.createloop
-  //   // frameRate(30)
-  //   // createLoop({duration:3, gif:true})
-  //   
+  // if (save){
+  //https://github.com/tapioca24/p5.capture
+  // or
+  // https://www.npmjs.com/package/p5snap
+  
   // }
 }
 
 function draw() {
-  translate(centerX,centerY); // move axis system to center screen
+
   noLoop();
-  background(params.bgColor);
+  if(params.transparentBackground){
+    background(255,255,255,100); 
+  } else {
+    background(params.bgColor);
+  }
 
   if (is3D){
     orbitControl();
+    // TODO add y and x resolution
+  } else {
+    // calculate center here so resizeCanvas will move drawing
+    centerX = windowWidth*0.5;
+    centerY = windowHeight*0.5;
+    translate(centerX,centerY); // move axis system to center screen
+  }
+
+  if (params.fillShapeBackground){
+    // run twice, once for bg
+    // todo support 3d
+    fill(255);
+    noStroke();
+    drawSpiralFullEquation();
   }
 
   // settings for ellipses
   noFill();
   stroke(3);
-  // fill(255); // for closed shape in front
-
 
   // calculate spiral and draw shapes using the full spiral equation
   drawSpiralFullEquation();
@@ -130,8 +158,8 @@ return [x,y];
 }
 
 function increaseWH(){
-  w += w_increase;
-  h = w*h_increase;
+  w += params.width_increase * params.zoom;
+  h = w*params.height_increase * params.zoom;
 }
 
 function drawSpiralRadiusAngle(){
@@ -158,7 +186,7 @@ function drawSpiralRadiusAngle(){
 }
 
 function drawSpiralFullEquation(){
-  w = 1; // TODO slider these
+  w = 1;
   h = 1;
 
   beginShape();
@@ -169,8 +197,6 @@ function drawSpiralFullEquation(){
       angle < params.cycle_degrees;
       angle += params.increments ) 
     {
-      // radius=a*exp(k*phi)
-      // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
       spiral_constant = params.spiral_constant; // - spiral constant, initial radius
       // need a dummy here to not interfere with gui
       // feature make slider neg instead of flip box
@@ -179,22 +205,33 @@ function drawSpiralFullEquation(){
         // flip is based upon the spiral constant sign
         spiral_constant *= -1; 
       }
-      // polar_slope_angel = params.polar_slope; // alpha - polar slope angle - golden/fibonacci will be +- 17. "rate of increase of the spiral"
-      // alfa the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. α is a constant for any given logarithmic spiral.
-      // k = tan(alpha) -> polar slope (polar slope angle)
 
-      // Curvature = cos(alfa)/r
-      // polar slope angle to polar slope
-      polar_slope = tan(degreesToRadians(params.polar_slope)); // k - polar slope, growth factor
+      // polar slope (growth factor, rate of increase of the spiral) 
+      // polar slope angle to polar slope: k = tan(alpha)
+      // alpha is the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. 
+      // alpha is a constant for any given logarithmic spiral.
+      // golden/fibonacci will be alpha = +- 17. 
+      polar_slope = tan(degreesToRadians(params.polar_slope));
       
       // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
       phi = degreesToRadians(angle);
 
-      // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+            // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
+
       r = spiral_constant * exp(polar_slope * phi);
 
-      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
+            // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
 
+      [x,y] = locationUponLogarithmicSpiral(r * params.zoom, phi, flip=params.isShellDoubleFlip);
+
+      // TODO zoom
+      x *= params.zoom;
+      y *= params.zoom;
+
+      if (is3D){
+        translate(1,1,z);
+        // z += 1;
+      }
       if (params.isDrawSpiralPoints){
         point(x,y);
       }
@@ -214,3 +251,12 @@ function drawSpiralFullEquation(){
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
+
+// feature click to disappear gui
+// feature beautify gui with css
+// feature colors of shape
+// feature ellipseMode(CORNER)
+// feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
+// feature Curvature = cos(alfa)/r
+

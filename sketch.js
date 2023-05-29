@@ -1,32 +1,59 @@
 // center position canvas
 let centerX,centerY = 0;
 // let centerY = 0;
-let slider_polar_slope;
-let slider_spiral_constant;
-let slider_cycle_degrees;
-let slider_increments;
-let box_shell_flip;
-let box_shell_flip_double;
+// let slider_polar_slope;
+// let slider_spiral_constant;
+// let slider_cycle_degrees;
+// let slider_increments;
+// let box_shell_flip;
+// let box_shell_flip_double;
 let w_increase = 2;
 let h_increase = 1.8;
 let w,h = 1;
 // let h = 1;
 let cycle_degrees = 360; // change to lower for 'cake slices'
 let is3D = false;
-let isDrawSpiralCurve = false;
-let isDrawSpiralPoints = false;
-let isDrawSpiralShapes = true;
-let isShellFlipped = false;
-let isShellDoubleFlip = false;
 let saveGif = false;
 // let guiY = 1;
 
 
-// let myNumber = 100;
-// let myChoice = ['one', 'two', 'three'];
 var visible = true;
 var gui;
-var myColor = '#eeee00';
+// var bgColor = '#ebe6f5';
+
+
+
+let params = {
+
+  bgColor: '#ebe6f5',  
+
+  isShellFlipped: false,
+  isShellDoubleFlip: false,
+
+  isDrawSpiralCurve :   false,
+  isDrawSpiralPoints:   false,
+  isDrawSpiralShapes:   true,
+
+  polar_slope:8.034,
+  polar_slopeMin:0,
+  polar_slopeMax:50,
+  polar_slopeStep:0.01,
+
+  spiral_constant: 36.34,
+  spiral_constantMin : 0.034,
+  spiral_constantMax : 50,
+  spiral_constantStep: 0.01,
+
+  increments: 3,
+  incrementsMin : 0,
+  incrementsMax : 15,
+  incrementsStep: 0.5,
+
+  cycle_degrees: 360,
+  cycle_degreesMin : 0,
+  cycle_degreesMax : 360*10,
+  cycle_degreesStep: 10,  
+}
 
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 // todo 3d 
@@ -34,7 +61,6 @@ var myColor = '#eeee00';
 // todo gui
 // todo more params?
 // todo export pngs
-// todo color
 // todo  - can params change within the shell?
 
 function setup() {
@@ -47,16 +73,18 @@ function setup() {
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
   guiY = windowHeight*0.7 ;
-  slider_polar_slope = drawSlider(1,0.034,50,8.34,0.01);
-  slider_spiral_constant = drawSlider(2,0.034,50,36.34,0.01);
-  slider_cycle_degrees = drawSlider(3, 0, 360*10, 360, 10);
-  slider_increments = drawSlider(4, 0, 15, 3, 0.5);
-  box_shell_flip = drawCheckBox(5, 'flip');
-  box_shell_flip_double = drawCheckBox(6, 'double flip');
+  // slider_polar_slope = drawSlider(1,0.034,50,8.34,0.01);
+  // slider_spiral_constant = drawSlider(2,0.034,50,36.34,0.01);
+  // slider_cycle_degrees = drawSlider(3, 0, 360*10, 360, 10);
+  // slider_increments = drawSlider(4, 0, 15, 3, 0.5);
+  // box_shell_flip = drawCheckBox(5, 'flip');
+  // box_shell_flip_double = drawCheckBox(6, 'double flip');
+
+  // gui = createGui();
+  // gui.addGlobals('bgColor', 'isShellFlipped', 'isShellDoubleFlip');
 
   gui = createGui();
-  gui.addGlobals('myColor');
-
+  gui.addObject(params);
 
   // if (saveGif){
   //   // see link for full needs
@@ -73,7 +101,6 @@ function drawSlider(idx, min=0, max=80, val=10, step=1){
   slider.style('width', '180px');
   
   let label = createSpan(slider.value());
-  // TODO add background and title and font
   label.position(slider.x + slider.width + 10, slider.y);
   let onInput = () => {
     label.html(slider.value());
@@ -93,7 +120,7 @@ function draw() {
   translate(centerX,centerY);
   noLoop();
   
-  background(myColor);
+  background(params.bgColor);
 
   if (is3D){
     orbitControl();
@@ -117,7 +144,7 @@ function mouseReleased() {
   redraw();
 }
 
-function changeCheckBox(){
+// function changeCheckBox(){
   if (box_shell_flip_double.checked())
   {
     isShellDoubleFlip = true;
@@ -125,12 +152,12 @@ function changeCheckBox(){
     isShellDoubleFlip = false;
   }
   if (box_shell_flip.checked()){
-    isShellFlipped = true;
+    params.isShellFlipped = true;
   } else {
-    isShellFlipped = false;
+    params.isShellFlipped = false;
   }
   redraw();
-}
+// }
 
 function degreesToRadians(degrees){
   // 1° * π/180 
@@ -198,8 +225,8 @@ function drawSpiralFullEquation(){
   w = 1; // TODO slider these
   h = 1;
 
-  cycle_degrees = slider_cycle_degrees.value();
-  angle_increments = slider_increments.value();
+  cycle_degrees = params.cycle_degrees;
+  angle_increments = params.increments;
 
   beginShape();
   // log spiral in radians is radius=a*exp(k*phi), 
@@ -211,13 +238,13 @@ function drawSpiralFullEquation(){
     {
       // radius=a*exp(k*phi)
       // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
-      spiral_constant = slider_spiral_constant.value(); // - spiral constant, initial radius
+      spiral_constant = params.spiral_constant; // - spiral constant, initial radius
 
-      if (isShellFlipped){
+      if (params.isShellFlipped){
         // flip is based upon the spiral constant sign
         spiral_constant *= -1; 
       }
-      polar_slope_angel = slider_polar_slope.value(); // alpha - polar slope angle - golden/fibonacci will be +- 17. "rate of increase of the spiral"
+      polar_slope_angel = params.polar_slope; // alpha - polar slope angle - golden/fibonacci will be +- 17. "rate of increase of the spiral"
       // alfa the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. α is a constant for any given logarithmic spiral.
       // k = tan(alpha) -> polar slope (polar slope angle)
 
@@ -230,18 +257,23 @@ function drawSpiralFullEquation(){
       // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
       r = spiral_constant * exp(polar_slope * phi);
 
-      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=isShellDoubleFlip);
+      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
 
-      if (isDrawSpiralPoints){
+      if (params.isDrawSpiralPoints){
         point(x,y);
       }
-      if (isDrawSpiralCurve){
+      if (params.isDrawSpiralCurve){
         curveVertex(x,y);
       }
-      if (isDrawSpiralShapes){
+      if (params.isDrawSpiralShapes){
         ellipse(x, y, w, h);
       }
       increaseWH();
     }
   endShape();
+}
+
+// dynamically adjust the canvas to the window
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }

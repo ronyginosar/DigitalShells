@@ -21,7 +21,13 @@ let isShellDoubleFlip = false;
 let saveGif = false;
 
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
-
+// todo 3d 
+// todo zoom out
+// todo gui
+// todo more params?
+// todo export pngs
+// todo color
+// todo  - can params change within the shell?
 
 function setup() {
   if(is3D){
@@ -33,7 +39,6 @@ function setup() {
 	centerX = windowWidth*0.5;
 	centerY = windowHeight*0.5;
   guiY = windowHeight*0.7 ;
-  background(200);
   slider_polar_slope = drawSlider(1,0.034,50,8.34,0.01);
   slider_spiral_constant = drawSlider(2,0.034,50,36.34,0.01);
   slider_cycle_degrees = drawSlider(3, 0, 360*10, 360, 10);
@@ -42,10 +47,11 @@ function setup() {
   box_shell_flip_double = drawCheckBox(6, 'double flip');
 
   // if (saveGif){
+  //   // see link for full needs
   //   // https://www.npmjs.com/package/p5.createloop
   //   // frameRate(30)
   //   // createLoop({duration:3, gif:true})
-  //   // see link for full needs
+  //   
   // }
 }
 
@@ -74,7 +80,7 @@ function drawCheckBox(idx, txt){
 function draw() {
   translate(centerX,centerY);
   noLoop();
-  background(200);
+  background(255);
 
   if (is3D){
     orbitControl();

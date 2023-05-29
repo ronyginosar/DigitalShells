@@ -26,7 +26,7 @@ let saveGif = false;
 // let myChoice = ['one', 'two', 'three'];
 var visible = true;
 var gui;
-var myColor = 200;
+var myColor = '#eeee00';
 
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 // todo 3d 

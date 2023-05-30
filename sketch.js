@@ -1,11 +1,8 @@
-// center position canvas
-let centerX,centerY = 0;
-let is3D = true;
+let centerX,centerY = 0; // center position canvas
+let is3D = true; // Note: panning with right click
 let saveGif = false;
-let z = 0;
-
-var gui;
-
+var gui; // double click to disappear gui
+var gui_3d; // double click to disappear gui
 
 // todo 3d 
 // todo zoom out
@@ -18,7 +15,7 @@ let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
   bgColor: '#d8ecf8',  
 
-  isShellFlipped: false,
+  isShellFlipped: true,
   isShellDoubleFlip: false,
 
   isDrawSpiralCurve : false,
@@ -58,13 +55,12 @@ let params = {
   fillShapeBackground: false,
   transparentBackground: false,
 
-  // scale
-  zoom: 1,
-  zoomMin: 0.0001,
-  zoomMax: 3,
-  zoomStep: 0.0001,
+}
+
+let params_3d = {
 
 }
+
 
 function setup() {
   if(is3D){
@@ -76,29 +72,34 @@ function setup() {
   gui = createGui("Digital Shells");
   gui.addObject(params);
 
+  gui_3d = createGui("3D Digital Shells").setPosition(windowWidth - 220, 20);
+  gui_3d.addObject(params_3d);
+
   // if (save){
   //https://github.com/tapioca24/p5.capture
   // or
   // https://www.npmjs.com/package/p5snap
   
   // }
+
+
 }
 
 function draw() {
-
-  noLoop();
+  // noLoop(); // --> kills orbitControl
   if(params.transparentBackground){
     background(255,255,255,100); 
   } else {
     background(params.bgColor);
   }
 
+
   if (is3D){
     orbitControl();
     // TODO add y and x resolution
   } else {
     // calculate center here so resizeCanvas will move drawing
-    centerX = windowWidth*0.5;
+    centerX = windowWidth*0.7;
     centerY = windowHeight*0.5;
     translate(centerX,centerY); // move axis system to center screen
   }
@@ -121,6 +122,7 @@ function draw() {
   // calculate spiral and draw shapes using the simplified spiral equation
   // drawSpiralRadiusAngle();
 }
+
 
 
 function degreesToRadians(degrees){
@@ -158,8 +160,9 @@ return [x,y];
 }
 
 function increaseWH(){
-  w += params.width_increase * params.zoom;
-  h = w*params.height_increase * params.zoom;
+  w += params.width_increase; // * params.zoom;
+  h = w*params.height_increase; // * params.zoom;
+  // h += params.height_increase * params.zoom; // for linear zoom use this
 }
 
 function drawSpiralRadiusAngle(){
@@ -186,18 +189,25 @@ function drawSpiralRadiusAngle(){
 }
 
 function drawSpiralFullEquation(){
+  /*
+  log spiral in radians using radius=a*exp(k*phi) 
+  exp(k*phi), the log, is the ratio of the lengths between two lines that extend out from the origin. 
+  */
   w = 1;
   h = 1;
-
-  beginShape();
-  // log spiral in radians is radius=a*exp(k*phi), 
-  
-  
-    for (let angle = 0     ;
-      angle < params.cycle_degrees;
-      angle += params.increments ) 
+  z = 0;
+  beginShape();  
+    // for (let angle = 0, z = 0;
+    //   angle < params.cycle_degrees, z < 360 ;
+    //   angle += params.increments, z += 10) 
+    for (let angle = 0;
+      angle < params.cycle_degrees ;
+      angle += params.increments) 
     {
-      spiral_constant = params.spiral_constant; // - spiral constant, initial radius
+      if (is3D){  
+        z += 10;
+      }
+      spiral_constant = params.spiral_constant; // * params.zoom; 
       // need a dummy here to not interfere with gui
       // feature make slider neg instead of flip box
 
@@ -216,31 +226,37 @@ function drawSpiralFullEquation(){
       // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
       phi = degreesToRadians(angle);
 
-            // exp(k*phi) -> ratio of the lengths between two lines that extend out from the origin. (the log part)
-
       r = spiral_constant * exp(polar_slope * phi);
 
-            // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+      // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
 
-      [x,y] = locationUponLogarithmicSpiral(r * params.zoom, phi, flip=params.isShellDoubleFlip);
-
-      // TODO zoom
-      x *= params.zoom;
-      y *= params.zoom;
-
-      if (is3D){
-        translate(1,1,z);
-        // z += 1;
-      }
       if (params.isDrawSpiralPoints){
         point(x,y);
       }
       if (params.isDrawSpiralCurve){
-        curveVertex(x,y);
+        if (is3D){    
+          normalMaterial();
+          push();
+          curveVertex(x, y, z);
+          pop();
+        } else {
+          curveVertex(x,y);
+        }
       }
       if (params.isDrawSpiralShapes){
-        // draw ellipses along Fibonacci curve
-        ellipse(x, y, w, h);
+        // draw ellipses along log spiral curve
+        if (is3D){    
+          push();
+          translate(x, y, z);
+          ellipse(0, 0, w, h);
+          pop();
+        } else {
+          push();
+          translate(x, y);
+          ellipse(0, 0, w, h);
+          pop();
+        }
       }
       increaseWH();
     }
@@ -253,7 +269,6 @@ function windowResized() {
 }
 
 
-// feature click to disappear gui
 // feature beautify gui with css
 // feature colors of shape
 // feature ellipseMode(CORNER)

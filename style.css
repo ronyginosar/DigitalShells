@@ -1,11 +1,12 @@
 html, body {
   margin: 0;
   padding: 0;
-  /* font-family: 'Open Sans', sans-serif; */
+  /* add for orbitControl */
+  height: 100%; 
+  overflow: hidden;
 }
 
 canvas {
   display: block;
-  /* font-family: 'Open Sans', sans-serif; */
 }
 

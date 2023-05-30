@@ -4,11 +4,9 @@ let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 
-// todo 3d 
-// todo zoom out
+// todo 3d gui + understand side cone...
 // todo export pngs
 // todo  - can params change within the shell?
-// todo bool alpha bg
 
 
 let params = {

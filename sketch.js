@@ -1,5 +1,4 @@
 let centerX,centerY = 0; // center position canvas
-// let is3D = false; // Note: panning with right click
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
@@ -62,23 +61,12 @@ let params = {
 
 }
 
-// let params_3d = {
-//   z_increment:5,
-//   z_incrementMin:0.1,
-//   z_incrementMax:10,
-//   z_incrementStep:0.1,
-// }
-
-
 function setup() {
   frameRate(10);
   createCanvas(windowWidth, windowHeight, WEBGL);
 
   gui = createGui("Digital Shells");
   gui.addObject(params);
- 
-  // gui_3d = createGui("3D Digital Shells").setPosition(windowWidth - 220, 20);
-  // gui_3d.addObject(params_3d);
   
   // if (save){
   //https://github.com/tapioca24/p5.capture
@@ -98,7 +86,7 @@ function draw() {
 
   if (params.fillShapeBackground){
     // run twice, once for bg
-    // todo support 3d
+    // feature support 3d --> no idea how yet
     fill(255);
     noStroke();
     drawSpiralFullEquation();

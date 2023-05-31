@@ -1,13 +1,13 @@
 let centerX,centerY = 0; // center position canvas
-let is3D = false; // Note: panning with right click
+let is3D = true; // Note: panning with right click
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 
-// todo 3d gui + understand side cone...
 // todo export pngs
 // todo  - can params change within the shell?
-
+// todo make 3d more dense
+// todo make more shapes?
 
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
@@ -56,11 +56,15 @@ let params = {
 }
 
 let params_3d = {
-
+  z_increment:5,
+  z_incrementMin:0.1,
+  z_incrementMax:10,
+  z_incrementStep:0.1,
 }
 
 
 function setup() {
+  frameRate(20);
   if(is3D){
     createCanvas(windowWidth, windowHeight, WEBGL);
   } else {
@@ -70,17 +74,16 @@ function setup() {
   gui = createGui("Digital Shells");
   gui.addObject(params);
 
-  gui_3d = createGui("3D Digital Shells").setPosition(windowWidth - 220, 20);
-  gui_3d.addObject(params_3d);
+  if(is3D){
+    gui_3d = createGui("3D Digital Shells").setPosition(windowWidth - 220, 20);
+    gui_3d.addObject(params_3d);
+  }
 
   // if (save){
   //https://github.com/tapioca24/p5.capture
   // or
   // https://www.npmjs.com/package/p5snap
-  
   // }
-
-
 }
 
 function draw() {
@@ -91,10 +94,8 @@ function draw() {
     background(params.bgColor);
   }
 
-
   if (is3D){
     orbitControl();
-    // TODO add y and x resolution
   } else {
     // calculate center here so resizeCanvas will move drawing
     centerX = windowWidth*0.7;
@@ -193,20 +194,14 @@ function drawSpiralFullEquation(){
   */
   w = 1;
   h = 1;
+  // z = -1500;
   z = 0;
-  // stroke(0,255,0);
-  // circle(0,0,10);
-  // stroke(255,0,0)
-  // beginShape();  
-    // for (let angle = 0, z = 0;
-    //   angle < params.cycle_degrees, z < 360 ;
-    //   angle += params.increments, z += 10) 
     for (let angle = 0;
       angle < params.cycle_degrees ;
       angle += params.increments) 
     {
       if (is3D){  
-        z += 10;
+        z += params_3d.z_increment;
       }
       spiral_constant = params.spiral_constant; // * params.zoom; 
       // need a dummy here to not interfere with gui
@@ -251,11 +246,12 @@ function drawSpiralFullEquation(){
 
         // draw ellipses along log spiral curve
         if (is3D){    
+          drawEllipseCurve(x, y, w, h, z);
 
-          push();
-          translate(x, y, z);
-          ellipse(0, 0, w, h);
-          pop();
+          // push();
+          // translate(x, y, z);
+          // ellipse(0, 0, w, h);
+          // pop();
         } else {
           // push();
           // translate(x, y);
@@ -274,9 +270,9 @@ function windowResized() {
 }
 
 
-function drawEllipseCurve(x, y, w, h){
+function drawEllipseCurve(x, y, w, h, z=0){
   push();
-  translate(x*2, y*2);
+  translate(x*2, y*2, z*2);
   beginShape();
   for (let t = 0; t <= 360; t+=1){
     coord_x = w * cos(degreesToRadians(t)); 

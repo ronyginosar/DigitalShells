@@ -1,5 +1,5 @@
 let centerX,centerY = 0; // center position canvas
-let is3D = true; // Note: panning with right click
+// let is3D = false; // Note: panning with right click
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
@@ -53,32 +53,33 @@ let params = {
   fillShapeBackground: false,
   transparentBackground: false,
 
-}
+  is3D: false,
 
-let params_3d = {
   z_increment:5,
   z_incrementMin:0.1,
   z_incrementMax:10,
   z_incrementStep:0.1,
+
 }
+
+// let params_3d = {
+//   z_increment:5,
+//   z_incrementMin:0.1,
+//   z_incrementMax:10,
+//   z_incrementStep:0.1,
+// }
 
 
 function setup() {
-  frameRate(20);
-  if(is3D){
-    createCanvas(windowWidth, windowHeight, WEBGL);
-  } else {
-    createCanvas(windowWidth, windowHeight);
-  }
+  frameRate(10);
+  createCanvas(windowWidth, windowHeight, WEBGL);
 
   gui = createGui("Digital Shells");
   gui.addObject(params);
-
-  if(is3D){
-    gui_3d = createGui("3D Digital Shells").setPosition(windowWidth - 220, 20);
-    gui_3d.addObject(params_3d);
-  }
-
+ 
+  // gui_3d = createGui("3D Digital Shells").setPosition(windowWidth - 220, 20);
+  // gui_3d.addObject(params_3d);
+  
   // if (save){
   //https://github.com/tapioca24/p5.capture
   // or
@@ -93,15 +94,7 @@ function draw() {
   } else {
     background(params.bgColor);
   }
-
-  if (is3D){
-    orbitControl();
-  } else {
-    // calculate center here so resizeCanvas will move drawing
-    centerX = windowWidth*0.7;
-    centerY = windowHeight*0.5;
-    translate(centerX,centerY); // move axis system to center screen
-  }
+  orbitControl();
 
   if (params.fillShapeBackground){
     // run twice, once for bg
@@ -129,18 +122,6 @@ function degreesToRadians(degrees){
   radians = degrees * PI/180;
   return radians;
 }
-
-// function helperCircle(radius){
-//   // logarithmic spiral and an expanding circle centred 
-//   // at the origin to demonstrate that the angle between 
-//   // the tangents of the two curves at the points of 
-//   // intersection remains constant. 
-//   // https://en.wikipedia.org/wiki/File:Logspiral.gif
-//   push();
-//   ellipseMode(RADIUS);
-//   ellipse(0,0,radius);
-//   pop();
-// }
 
 function locationUponLogarithmicSpiral(radius,angle,flip=true){
  // https://mathworld.wolfram.com/LogarithmicSpiral.html
@@ -194,14 +175,18 @@ function drawSpiralFullEquation(){
   */
   w = 1;
   h = 1;
-  // z = -1500;
   z = 0;
+  if (params.isDrawSpiralCurve){
+    beginShape();
+  }
     for (let angle = 0;
       angle < params.cycle_degrees ;
       angle += params.increments) 
     {
-      if (is3D){  
-        z += params_3d.z_increment;
+      if (params.is3D){  
+        z += params.z_increment;
+      } else {
+        z = 0;
       }
       spiral_constant = params.spiral_constant; // * params.zoom; 
       // need a dummy here to not interfere with gui
@@ -228,39 +213,26 @@ function drawSpiralFullEquation(){
       [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
 
       if (params.isDrawSpiralPoints){
-        point(x,y);
+        if (params.is3D){   
+          push();
+          translate(x, y, z);
+          sphere(1);
+          pop(); 
+        } else {
+          point(x,y);
+        }
       }
       if (params.isDrawSpiralCurve){
-        if (is3D){    
-          normalMaterial();
-          push();
-          curveVertex(x, y, z);
-          pop();
-        } else {
-          curveVertex(x,y);
-          stroke(255,0,0);
-
-        }
+        curveVertex(x, y, z);
       }
       if (params.isDrawSpiralShapes){
-
         // draw ellipses along log spiral curve
-        if (is3D){    
-          drawEllipseCurve(x, y, w, h, z);
-
-          // push();
-          // translate(x, y, z);
-          // ellipse(0, 0, w, h);
-          // pop();
-        } else {
-          // push();
-          // translate(x, y);
-          // ellipse(0, 0, w, h);
-          drawEllipseCurve(x, y, w, h);
-          // pop();
-        }
+        drawEllipseCurve(x, y, w, h, z);
       }
       increaseWH();
+    }
+    if (params.isDrawSpiralCurve){
+      endShape();
     }
 }
 
@@ -268,7 +240,6 @@ function drawSpiralFullEquation(){
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-
 
 function drawEllipseCurve(x, y, w, h, z=0){
   push();

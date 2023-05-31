@@ -1,5 +1,5 @@
 let centerX,centerY = 0; // center position canvas
-let is3D = true; // Note: panning with right click
+let is3D = false; // Note: panning with right click
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
@@ -129,17 +129,17 @@ function degreesToRadians(degrees){
   return radians;
 }
 
-function helperCircle(radius){
-  // logarithmic spiral and an expanding circle centred 
-  // at the origin to demonstrate that the angle between 
-  // the tangents of the two curves at the points of 
-  // intersection remains constant. 
-  // https://en.wikipedia.org/wiki/File:Logspiral.gif
-  push();
-  ellipseMode(RADIUS);
-  ellipse(0,0,radius);
-  pop();
-}
+// function helperCircle(radius){
+//   // logarithmic spiral and an expanding circle centred 
+//   // at the origin to demonstrate that the angle between 
+//   // the tangents of the two curves at the points of 
+//   // intersection remains constant. 
+//   // https://en.wikipedia.org/wiki/File:Logspiral.gif
+//   push();
+//   ellipseMode(RADIUS);
+//   ellipse(0,0,radius);
+//   pop();
+// }
 
 function locationUponLogarithmicSpiral(radius,angle,flip=true){
  // https://mathworld.wolfram.com/LogarithmicSpiral.html
@@ -194,7 +194,10 @@ function drawSpiralFullEquation(){
   w = 1;
   h = 1;
   z = 0;
-  beginShape();  
+  // stroke(0,255,0);
+  // circle(0,0,10);
+  // stroke(255,0,0)
+  // beginShape();  
     // for (let angle = 0, z = 0;
     //   angle < params.cycle_degrees, z < 360 ;
     //   angle += params.increments, z += 10) 
@@ -240,25 +243,29 @@ function drawSpiralFullEquation(){
           pop();
         } else {
           curveVertex(x,y);
+          stroke(255,0,0);
+
         }
       }
       if (params.isDrawSpiralShapes){
+
         // draw ellipses along log spiral curve
         if (is3D){    
+
           push();
           translate(x, y, z);
           ellipse(0, 0, w, h);
           pop();
         } else {
-          push();
-          translate(x, y);
-          ellipse(0, 0, w, h);
-          pop();
+          // push();
+          // translate(x, y);
+          // ellipse(0, 0, w, h);
+          drawEllipseCurve(x, y, w, h);
+          // pop();
         }
       }
       increaseWH();
     }
-  endShape();
 }
 
 // dynamically adjust the canvas to the window
@@ -266,6 +273,19 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+
+function drawEllipseCurve(x, y, w, h){
+  push();
+  translate(x*2, y*2);
+  beginShape();
+  for (let t = 0; t <= 360; t+=1){
+    coord_x = w * cos(degreesToRadians(t)); 
+    coord_y = h * sin(degreesToRadians(t));
+    vertex(coord_x, coord_y);
+  }
+  endShape(CLOSE);
+  pop();
+}
 
 // feature beautify gui with css
 // feature colors of shape

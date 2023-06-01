@@ -4,7 +4,6 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 let serial_array = [];
 
-
 // todo export pngs
 // todo  - can params change within the shell?
 // todo make 3d more dense
@@ -52,7 +51,7 @@ let params = {
   height_increaseStep: 0.1,  
 
   fillShapeBackground: false,
-  transparentBackground: false,
+  transparentBackground: true,
 
   is3D: false,
 
@@ -90,9 +89,11 @@ let params = {
 
 P5Capture.setDefaultOptions({
   format: "png",
-  framerate: 10,
+  framerate: 1,
   // quality: 0.5,
-  width: 320,
+  width: 1920,
+  top: 200,
+  
 });
 
 function imageFilename(index) {
@@ -103,9 +104,8 @@ function setup() {
   frameRate(10);
   createCanvas(windowWidth, windowHeight, WEBGL);
 
-  gui = createGui("Digital Shells");
+  gui = createGui("Digital Shells").setPosition(windowWidth*0.85,10);
   gui.addObject(params);
-  // params.serial="${params.polar_slope}";
 
   // serial number 
   for (let k in params) {
@@ -309,7 +309,7 @@ function drawEllipseCurve(x, y, w, h, z=0){
   pop();
 }
 
-// feature beautify gui with css
+// feature beautify gui with css --> or https://openprocessing.org/sketch/872912
 // feature colors of shape
 // feature ellipseMode(CORNER)
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved

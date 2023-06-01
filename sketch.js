@@ -2,6 +2,8 @@ let centerX,centerY = 0; // center position canvas
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
+let serial_array = [];
+
 
 // todo export pngs
 // todo  - can params change within the shell?
@@ -61,13 +63,75 @@ let params = {
 
 }
 
+// let params_3d = {
+
+//   z_increment:5,
+//   z_incrementMin:0.1,
+//   z_incrementMax:10,
+//   z_incrementStep:0.1,
+
+// }
+
+//   isShellFlipped: true,
+//   isShellDoubleFlip: false,
+//   isDrawSpiralCurve : false,
+//   isDrawSpiralPoints: false,
+//   isDrawSpiralShapes: true,
+//   polar_slope:8.034,
+//   spiral_constant: 36.34,
+//   increments: 3,
+//   cycle_degrees: 360,  
+//   width_increase: 2,
+//   height_increase: 1.8,
+//   fillShapeBackground: false,
+//   transparentBackground: false,
+//   is3D: false,
+//   z_increment:5,
+
+P5Capture.setDefaultOptions({
+  format: "png",
+  framerate: 10,
+  // quality: 0.5,
+  width: 320,
+});
+
+function imageFilename(index) {
+  return serial_array.toString().padStart(7, "0");
+}
+
 function setup() {
   frameRate(10);
   createCanvas(windowWidth, windowHeight, WEBGL);
 
   gui = createGui("Digital Shells");
   gui.addObject(params);
-  
+  // params.serial="${params.polar_slope}";
+
+  // serial number 
+  for (let k in params) {
+    if (k.includes("Max") || k.includes("Min") || k.includes("Step") ){
+      // pass sliders
+    } 
+    else if (k.includes("bgColor")) {
+      // pass color
+    }
+    else if (params[k] == true){
+      console.log(k + ' is ' + 1);
+      serial_array.push("1");
+    }
+    else if (params[k] == false){
+      console.log(k + ' is ' + 0);
+      serial_array.push("0");
+    }
+    else {
+      console.log(k + ' is ' + params[k]);
+      serial_array.push(str((params[k])));
+    }
+  }
+  console.log(serial_array);
+
+
+
   // if (save){
   //https://github.com/tapioca24/p5.capture
   // or
@@ -76,6 +140,7 @@ function setup() {
 }
 
 function draw() {
+  serial_array = [];
   // noLoop(); // --> kills orbitControl
   if(params.transparentBackground){
     background(255,255,255,100); 
@@ -83,6 +148,8 @@ function draw() {
     background(params.bgColor);
   }
   orbitControl();
+
+
 
   if (params.fillShapeBackground){
     // run twice, once for bg
@@ -247,4 +314,5 @@ function drawEllipseCurve(x, y, w, h, z=0){
 // feature ellipseMode(CORNER)
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 // feature Curvature = cos(alfa)/r
+// feature don't orbitzoom on the gui...
 

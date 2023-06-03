@@ -2,7 +2,8 @@ let centerX,centerY = 0; // center position canvas
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
-let serial_array = [];
+// let serial_array = [];
+let S_KEY = '83';
 
 // todo export pngs
 // todo  - can params change within the shell?
@@ -12,6 +13,11 @@ let serial_array = [];
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
   bgColor: '#d8ecf8',  
+
+  line_stroke: 1,
+  line_strokeMin: 0.01,
+  line_strokeMax: 3,
+  line_strokeStep: 0.01,
 
   isShellFlipped: true,
   isShellDoubleFlip: false,
@@ -63,42 +69,11 @@ let params = {
 }
 
 // let params_3d = {
-
 //   z_increment:5,
 //   z_incrementMin:0.1,
 //   z_incrementMax:10,
 //   z_incrementStep:0.1,
-
 // }
-
-//   isShellFlipped: true,
-//   isShellDoubleFlip: false,
-//   isDrawSpiralCurve : false,
-//   isDrawSpiralPoints: false,
-//   isDrawSpiralShapes: true,
-//   polar_slope:8.034,
-//   spiral_constant: 36.34,
-//   increments: 3,
-//   cycle_degrees: 360,  
-//   width_increase: 2,
-//   height_increase: 1.8,
-//   fillShapeBackground: false,
-//   transparentBackground: false,
-//   is3D: false,
-//   z_increment:5,
-
-P5Capture.setDefaultOptions({
-  format: "png",
-  framerate: 1,
-  // quality: 0.5,
-  width: 1920,
-  top: 200,
-  
-});
-
-function imageFilename(index) {
-  return serial_array.toString().padStart(7, "0");
-}
 
 function setup() {
   frameRate(10);
@@ -106,50 +81,60 @@ function setup() {
 
   gui = createGui("Digital Shells").setPosition(windowWidth*0.85,10);
   gui.addObject(params);
+}
 
-  // serial number 
+function savePngSerial()
+{
+  // libraries
+  // https://github.com/tapioca24/p5.capture
+  // https://www.npmjs.com/package/p5snap
+  // https://editor.p5js.org/golan/sketches/qKJcoNHXX
+  // https://github.com/drskullster/p5.js-export 
+ 
+  // manual :
+  serial = extractSerial();
+  save(serial_array + ".png");
+}
+
+function extractSerial(){
+  let serial_array = [];
+  // create serial number 
   for (let k in params) {
     if (k.includes("Max") || k.includes("Min") || k.includes("Step") ){
       // pass sliders
-    } 
-    else if (k.includes("bgColor")) {
+    } else if (k.includes("bgColor")) {
       // pass color
-    }
-    else if (params[k] == true){
+    } else if (params[k] == true){
       console.log(k + ' is ' + 1);
       serial_array.push("1");
-    }
-    else if (params[k] == false){
+    } else if (params[k] == false){
       console.log(k + ' is ' + 0);
       serial_array.push("0");
-    }
-    else {
+    } else {
       console.log(k + ' is ' + params[k]);
       serial_array.push(str((params[k])));
+      }
     }
+  // console.log(serial_array);
+  return str(serial_array);
+}
+
+function keyPressed(){
+  if (keyCode == S_KEY ) // s key
+  {
+    savePngSerial();
   }
-  console.log(serial_array);
-
-
-
-  // if (save){
-  //https://github.com/tapioca24/p5.capture
-  // or
-  // https://www.npmjs.com/package/p5snap
-  // }
 }
 
 function draw() {
   serial_array = [];
   // noLoop(); // --> kills orbitControl
   if(params.transparentBackground){
-    background(255,255,255,100); 
+    background(255,255,255,0); 
   } else {
     background(params.bgColor);
   }
   orbitControl();
-
-
 
   if (params.fillShapeBackground){
     // run twice, once for bg
@@ -161,7 +146,8 @@ function draw() {
 
   // settings for ellipses
   noFill();
-  stroke(3);
+  stroke('black');
+  strokeWeight(params.line_stroke);
 
   // calculate spiral and draw shapes using the full spiral equation
   drawSpiralFullEquation();
@@ -169,8 +155,6 @@ function draw() {
   // calculate spiral and draw shapes using the simplified spiral equation
   // drawSpiralRadiusAngle();
 }
-
-
 
 function degreesToRadians(degrees){
   // 1° * π/180 
@@ -308,6 +292,9 @@ function drawEllipseCurve(x, y, w, h, z=0){
   endShape(CLOSE);
   pop();
 }
+
+
+
 
 // feature beautify gui with css --> or https://openprocessing.org/sketch/872912
 // feature colors of shape

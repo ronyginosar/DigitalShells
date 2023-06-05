@@ -9,11 +9,14 @@ let S_KEY = '83';
 // todo  - can params change within the shell?
 // todo make 3d more dense
 // todo make more shapes?
+// todo double/ multi
 
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
-  bgColor: '#d8ecf8',  
-
+  
+  // bgColor: '#d8ecf8', 
+  // transparentBackground: true,
+ 
   line_stroke: 1,
   line_strokeMin: 0.01,
   line_strokeMax: 3,
@@ -57,7 +60,6 @@ let params = {
   height_increaseStep: 0.1,  
 
   fillShapeBackground: false,
-  transparentBackground: true,
 
   is3D: false,
 
@@ -93,7 +95,7 @@ function savePngSerial()
  
   // manual :
   serial = extractSerial();
-  save(serial_array + ".png");
+  save(serial + ".png");
 }
 
 function extractSerial(){
@@ -127,13 +129,12 @@ function keyPressed(){
 }
 
 function draw() {
-  serial_array = [];
   // noLoop(); // --> kills orbitControl
-  if(params.transparentBackground){
-    background(255,255,255,0); 
-  } else {
-    background(params.bgColor);
-  }
+  // if(params.transparentBackground){
+  background(255,255,255,0); 
+  // } else {
+  //   background(params.bgColor);
+  // }
   orbitControl();
 
   if (params.fillShapeBackground){

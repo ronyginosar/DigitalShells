@@ -162,6 +162,8 @@ function drawSpiralFullEquation(){
       }
       if (params.isDrawSpiralShapes){
         // draw ellipses along log spiral curve
+        // feature switch axis for tube?
+
         drawEllipseCurve(x, y, w, h, z);
       }
       increaseWH();
@@ -172,6 +174,7 @@ function drawSpiralFullEquation(){
 }
 
 function drawEllipseCurve(x, y, w, h, z=0){
+  // https://undergroundmathematics.org/glossary/ellipse#:~:text=The%20Cartesian%20equation%20of%20an,t)%3Dbsint.
   push();
   translate(x*2, y*2, z*2);
   beginShape();
@@ -231,6 +234,7 @@ function savePngSerial()
   // https://www.npmjs.com/package/p5snap
   // https://editor.p5js.org/golan/sketches/qKJcoNHXX
   // https://github.com/drskullster/p5.js-export 
+  // https://kentskyo.com/high-resolution-sketches-with-p5js/
 
   // manual :
   serial = extractSerial();
@@ -270,4 +274,5 @@ function extractSerial(){
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 // feature Curvature = cos(alfa)/r
 // feature don't orbitzoom on the gui...
+// feature:: use this gui https://kentskyo.com/high-resolution-sketches-with-p5js/
 

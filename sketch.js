@@ -62,7 +62,7 @@ let params = {
 
   is3D: false,
 
-  z_increment:5,
+  z_increment:3,
   z_incrementMin:0.1,
   z_incrementMax:10,
   z_incrementStep:0.1,
@@ -72,7 +72,7 @@ let params = {
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   frameRate(10);
-    pixelDensity(4.0);
+  pixelDensity(4.0);
 
   gui = createGui("Digital Shells");//.setPosition(windowWidth*0.85,10);
   gui.addObject(params);
@@ -85,6 +85,7 @@ function preload() {
 function draw() {
   background(255,255,255,0); 
   orbitControl();
+  // debugMode();
 
   if (params.fillShapeBackground){
     // run twice, once for bg
@@ -137,91 +138,88 @@ function drawSpiralFullEquation(){
   if (params.isDrawSpiralCurve){
     beginShape();
   }
-    for (let angle = 0;
-      angle < params.cycle_degrees ;
-      angle += params.increments) 
-    {
-      if (params.is3D){  
-        z += params.z_increment;
+  for (let angle = 0; angle < params.cycle_degrees ; angle += params.increments) 
+  {
+    if (params.is3D){  
+      z += params.z_increment;
+      // normalMaterial();
+      // z = angle/(2 * PI);
+      // -25* t/ (2 * PI)
+    } else {
+      z = 0;
+    }
+    spiral_constant = params.spiral_constant; // * params.zoom; 
+    // need a dummy here to not interfere with gui
+    // feature make slider neg instead of flip box
+
+    if (params.isShellFlipped){
+      // flip is based upon the spiral constant sign
+      spiral_constant *= -1; 
+    }
+
+    // polar slope (growth factor, rate of increase of the spiral) 
+    // polar slope angle to polar slope: k = tan(alpha)
+    // alpha is the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. 
+    // alpha is a constant for any given logarithmic spiral.
+    // golden/fibonacci will be alpha = +- 17. 
+    polar_slope = tan(degreesToRadians(params.polar_slope));
+    
+    // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
+    phi = degreesToRadians(angle);
+
+    r = spiral_constant * exp(polar_slope * phi);
+
+    // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+    [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
+
+    if (params.isDrawSpiralPoints){
+      if (params.is3D){   
+        push();
+        translate(x, z, y); // in 3d y and z are flipped
+        sphere(1);
+        pop(); 
       } else {
-        z = 0;
+        point(x,y);
       }
-      spiral_constant = params.spiral_constant; // * params.zoom; 
-      // need a dummy here to not interfere with gui
-      // feature make slider neg instead of flip box
-
-      if (params.isShellFlipped){
-        // flip is based upon the spiral constant sign
-        spiral_constant *= -1; 
-      }
-
-      // polar slope (growth factor, rate of increase of the spiral) 
-      // polar slope angle to polar slope: k = tan(alpha)
-      // alpha is the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. 
-      // alpha is a constant for any given logarithmic spiral.
-      // golden/fibonacci will be alpha = +- 17. 
-      polar_slope = tan(degreesToRadians(params.polar_slope));
-      
-      // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
-      phi = degreesToRadians(angle);
-
-      r = spiral_constant * exp(polar_slope * phi);
-
-      // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
-      [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
-
-      if (params.isDrawSpiralPoints){
-        if (params.is3D){   
-          push();
-          translate(x, y, z);
-          sphere(1);
-          pop(); 
-        } else {
-          point(x,y);
-        }
-      }
-      if (params.isDrawSpiralCurve){
-        curveVertex(x, y, z);
-      }
-      if (params.isDrawSpiralShapes){
-        // draw ellipses along log spiral curve
-        // feature switch axis for tube?
-        // feature not only ellipse
-        drawEllipseCurve(x, y, w, h, z);
-      }
-      increaseWH();
     }
     if (params.isDrawSpiralCurve){
-      endShape();
+      // TODO fix
+      if (params.is3D){
+        curveVertex(x, z, y);
+      }
+      else{
+        curveVertex(x, y);
+      }
     }
+    if (params.isDrawSpiralShapes){
+      // draw ellipses along log spiral curve
+      // feature not only ellipse
+      if (params.is3D){
+        // feature switch axis for tube?
+        // drawEllipseCurve(x, y, w, h, z);
+        drawEllipseCurve(x, z, w, h, y);
+      } else {
+        drawEllipseCurve(x, y, w, h);
+      }
+    }
+    increaseWH();
+  }
+  if (params.isDrawSpiralCurve){
+    endShape();
+  }
 }
 
 function drawEllipseCurve(x, y, w, h, z=0){
   // https://undergroundmathematics.org/glossary/ellipse#:~:text=The%20Cartesian%20equation%20of%20an,t)%3Dbsint.
   push();
   translate(x*2, y*2, z*2);
-  
-  if (params.is3D){
-    // normalMaterial();
-    // torus(w, 1, 24, 16);
-    beginShape();
-    for (let t = 0; t <= 360; t+=1){
-      coord_x = w * cos(degreesToRadians(t)); 
-      coord_y = h * sin(degreesToRadians(t));
-      curveVertex(coord_x, coord_y);
-    }
-    endShape(CLOSE);
-  } else {
-    beginShape();
-    for (let t = 0; t <= 360; t+=1){
-      coord_x = w * cos(degreesToRadians(t)); 
-      coord_y = h * sin(degreesToRadians(t));
-      vertex(coord_x, coord_y);
-    }
-    endShape(CLOSE);
-    // ellipse(0,0,w,h);
+  beginShape();
+  for (let t = 0; t <= 360; t+=1){
+    coord_x = w * cos(degreesToRadians(t)); 
+    coord_y = h * sin(degreesToRadians(t));
+    vertex(coord_x, coord_y);
   }
-  
+  endShape(CLOSE);
   pop();
 }
 

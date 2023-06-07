@@ -200,13 +200,28 @@ function drawEllipseCurve(x, y, w, h, z=0){
   // https://undergroundmathematics.org/glossary/ellipse#:~:text=The%20Cartesian%20equation%20of%20an,t)%3Dbsint.
   push();
   translate(x*2, y*2, z*2);
-  beginShape();
-  for (let t = 0; t <= 360; t+=1){
-    coord_x = w * cos(degreesToRadians(t)); 
-    coord_y = h * sin(degreesToRadians(t));
-    vertex(coord_x, coord_y);
+  
+  if (params.is3D){
+    // normalMaterial();
+    // torus(w, 1, 24, 16);
+    beginShape();
+    for (let t = 0; t <= 360; t+=1){
+      coord_x = w * cos(degreesToRadians(t)); 
+      coord_y = h * sin(degreesToRadians(t));
+      curveVertex(coord_x, coord_y);
+    }
+    endShape(CLOSE);
+  } else {
+    beginShape();
+    for (let t = 0; t <= 360; t+=1){
+      coord_x = w * cos(degreesToRadians(t)); 
+      coord_y = h * sin(degreesToRadians(t));
+      vertex(coord_x, coord_y);
+    }
+    endShape(CLOSE);
+    // ellipse(0,0,w,h);
   }
-  endShape(CLOSE);
+  
   pop();
 }
 
@@ -291,6 +306,34 @@ function mouseClicked(){
   firstLoad = false;
 }
 
+function drawPerlinRing(){
+  // https://forum.processing.org/two/discussion/24646/how-to-save-a-sketch-as-a-high-res-image.html
+  // if (s < 2000) {
+  //   // Create a series of perlin rings from big to small
+  //   for (int nTimes = 0; nTimes < 250; nTimes++) {
+
+  //     // Less points for smaller rings
+  //     int nPoints = int(4 * PI * s);
+  //     nPoints = min(nPoints, 500);
+  //     //println(nPoints);
+
+  //     // Create ring
+  //     for (int i = 0; i < nPoints; i++) {
+  //       float a = (float)i / nPoints * TAU;
+  //       float n = noise(xOffset + cos(a) * inc, yOffset + sin(a) * inc) * s;
+  //       float a1 = (float)(i + 1) / nPoints * TAU;
+  //       float n1 = noise(xOffset + cos(a1) * inc, yOffset + sin(a1) * inc) * s;
+  //       line(n * cos(a), n * sin(a), n1 * cos(a1), n1 * sin(a1));
+  //     }
+
+  //     // Increment perlin offset for next ring
+  //     xOffset += offsetInc;
+  //     yOffset += offsetInc;
+
+  //     // Update size
+  //     s *= m;
+  //   }
+}
 
 
 

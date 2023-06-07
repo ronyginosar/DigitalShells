@@ -9,7 +9,7 @@ let S_KEY = '83';
 // todo  - can params change within the shell?
 // todo make 3d more dense
 // todo make more shapes?
-// todo double/ multi
+// todo double/ multi shells
 
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master

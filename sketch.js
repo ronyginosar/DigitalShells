@@ -3,6 +3,7 @@ let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 let S_KEY = '83';
+let firstLoad = true;
 
 // todo  - can params change within the shell?
 // todo make 3d more dense
@@ -78,6 +79,9 @@ function setup() {
   gui.addObject(params);
 }
 
+function preload() {
+  font = loadFont('resources/OpenSans-Light.ttf');
+}
 
 function draw() {
   background(255,255,255,0); 
@@ -98,6 +102,27 @@ function draw() {
 
   // calculate spiral and draw shapes using the full spiral equation
   drawSpiralFullEquation();
+
+  if (firstLoad){
+    push();
+    let aString = 'zoom out to see entire shell on screen,';
+    let bString = "then press 's' to save image";
+    // let text_Width = textWidth(aString);
+    let text_Width = 700;
+    let text_size = 36;
+    console.log(text_Width);
+    rectMode(CENTER);
+    noStroke();
+    translate(0,0,100);
+    fill(10);
+    rect(0, 10, text_Width, 100);
+    fill('#ED225D');
+    textSize(text_size);
+    textFont(font);
+    text(aString, -text_Width/2+20, 0)
+    text(bString, -text_Width/2+20, text_size+4);
+    pop();
+  }
 
   // noLoop(); // --> kills orbitControl
 }
@@ -163,7 +188,7 @@ function drawSpiralFullEquation(){
       if (params.isDrawSpiralShapes){
         // draw ellipses along log spiral curve
         // feature switch axis for tube?
-
+        // feature not only ellipse
         drawEllipseCurve(x, y, w, h, z);
       }
       increaseWH();
@@ -264,6 +289,9 @@ function extractSerial(){
   return str(serial_array);
 }
 
+function mouseClicked(){
+  firstLoad = false;
+}
 
 
 

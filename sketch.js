@@ -35,7 +35,7 @@ let params = {
 
   spiral_constant: 36.34,
   spiral_constantMin : 0.034,
-  spiral_constantMax : 50,
+  spiral_constantMax : 150,
   spiral_constantStep: 0.01,
 
   increments: 3,
@@ -109,7 +109,6 @@ function draw() {
     // let text_Width = textWidth(aString);
     let text_Width = 700;
     let text_size = 36;
-    console.log(text_Width);
     rectMode(CENTER);
     noStroke();
     translate(0,0,100);

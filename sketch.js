@@ -104,7 +104,7 @@ function draw() {
 
   if (firstLoad){
     push();
-    let aString = 'zoom out to see entire shell on screen,';
+    let aString = 'zoom out to fit shell to screen,';
     let bString = "then press 's' to save image";
     // let text_Width = textWidth(aString);
     let text_Width = 700;
@@ -114,7 +114,7 @@ function draw() {
     translate(0,0,100);
     fill(10);
     rect(0, 10, text_Width, 100);
-    fill('#ED225D');
+    fill('cyan');
     textSize(text_size);
     textFont(font);
     text(aString, -text_Width/2+20, 0)

@@ -2,10 +2,8 @@ let centerX,centerY = 0; // center position canvas
 let saveGif = false;
 var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
-// let serial_array = [];
 let S_KEY = '83';
 
-// todo export pngs
 // todo  - can params change within the shell?
 // todo make 3d more dense
 // todo make more shapes?
@@ -71,72 +69,18 @@ let params = {
 
 }
 
-// let params_3d = {
-//   z_increment:5,
-//   z_incrementMin:0.1,
-//   z_incrementMax:10,
-//   z_incrementStep:0.1,
-// }
-
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
+  frameRate(10);
+    pixelDensity(4.0);
+
   gui = createGui("Digital Shells").setPosition(windowWidth*0.85,10);
   gui.addObject(params);
 }
 
 
-function savePngSerial()
-{
-  // libraries
-  // https://github.com/tapioca24/p5.capture
-  // https://www.npmjs.com/package/p5snap
-  // https://editor.p5js.org/golan/sketches/qKJcoNHXX
-  // https://github.com/drskullster/p5.js-export 
- 
-  // manual :
-  serial = extractSerial();
-  save(serial + ".png");
-}
-
-function extractSerial(){
-  let serial_array = [];
-  // create serial number 
-  for (let k in params) {
-    if (k.includes("Max") || k.includes("Min") || k.includes("Step") ){
-      // pass sliders
-    } else if (k.includes("bgColor")) {
-      // pass color
-    } else if (params[k] == true){
-      console.log(k + ' is ' + 1);
-      serial_array.push("1");
-    } else if (params[k] == false){
-      console.log(k + ' is ' + 0);
-      serial_array.push("0");
-    } else {
-      console.log(k + ' is ' + params[k]);
-      serial_array.push(str((params[k])));
-      }
-    }
-  // console.log(serial_array);
-  return str(serial_array);
-}
-
-function keyPressed(){
-  if (keyCode == S_KEY ) // s key
-  {
-    savePngSerial();
-  }
-}
-
 function draw() {
-  // noLoop(); // --> kills orbitControl
-  // if(params.transparentBackground){
   background(255,255,255,0); 
-  pixelDensity(4.0);
-  frameRate(10);
-  // } else {
-  //   background(params.bgColor);
-  // }
   orbitControl();
 
   if (params.fillShapeBackground){
@@ -155,60 +99,9 @@ function draw() {
   // calculate spiral and draw shapes using the full spiral equation
   drawSpiralFullEquation();
 
-  // calculate spiral and draw shapes using the simplified spiral equation
-  // drawSpiralRadiusAngle();
+  // noLoop(); // --> kills orbitControl
 }
 
-function degreesToRadians(degrees){
-  // 1° * π/180 
-  radians = degrees * PI/180;
-  return radians;
-}
-
-function locationUponLogarithmicSpiral(radius,angle,flip=true){
- // https://mathworld.wolfram.com/LogarithmicSpiral.html
- // log spiral in radians is radius=a*exp(k*phi), k = tan(alpha) -> polar slope (polar slope angle)
- // in cartesian: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
- // constant a is the rate of increase of the spiral
-if (flip){
-   // flip sin and cos for a flipped spiral
-    x = radius * sin(angle);
-    y = radius * cos(angle);
-} else {
-    y = radius * sin(angle);
-    x = radius * cos(angle);
-}
-return [x,y];
-}
-
-function increaseWH(){
-  w += params.width_increase; // * params.zoom;
-  h  = w*params.height_increase; // * params.zoom;
-  // h += params.height_increase * params.zoom; // for linear zoom use this
-}
-
-function drawSpiralRadiusAngle(){
-  w = 1;
-  h = 1;
-  beginShape();
-  for (let angle = 0           , radius = 0;
-      angle < cycle_degrees    , radius < 100;
-      angle += 6               , radius +=1) 
-  {
-    // angle = 30; // single angle for single line
-    // helperCircle(radius);
-    rad = degreesToRadians(angle); // logarithmicSpiral is based on radians
-    // convert the r,a to x,y
-    [x,y] = locationUponLogarithmicSpiral(radius,rad,flip=true);
-    // draw spiral curve or just points:
-    // curveVertex(x, y);
-    // point(x,y);
-    // draw ellipses along curve
-    ellipse(x, y, w, h);
-    increaseWH();
-  }
-  endShape();
-}
 
 function drawSpiralFullEquation(){
   /*
@@ -278,11 +171,6 @@ function drawSpiralFullEquation(){
     }
 }
 
-// dynamically adjust the canvas to the window
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
-
 function drawEllipseCurve(x, y, w, h, z=0){
   push();
   translate(x*2, y*2, z*2);
@@ -295,6 +183,85 @@ function drawEllipseCurve(x, y, w, h, z=0){
   endShape(CLOSE);
   pop();
 }
+
+function degreesToRadians(degrees){
+  // 1° * π/180 
+  radians = degrees * PI/180;
+  return radians;
+}
+
+function locationUponLogarithmicSpiral(radius,angle,flip=true){
+  // https://mathworld.wolfram.com/LogarithmicSpiral.html
+  // log spiral in radians is radius=a*exp(k*phi), k = tan(alpha) -> polar slope (polar slope angle)
+  // in cartesian: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+  // constant a is the rate of increase of the spiral
+  if (flip){
+    // flip sin and cos for a flipped spiral
+      x = radius * sin(angle);
+      y = radius * cos(angle);
+  } else {
+      y = radius * sin(angle);
+      x = radius * cos(angle);
+  }
+  return [x,y];
+}
+
+function increaseWH(){
+  w += params.width_increase; // * params.zoom;
+  h  = w*params.height_increase; // * params.zoom;
+  // h += params.height_increase * params.zoom; // for linear zoom use this
+}
+
+// dynamically adjust the canvas to the window
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+function keyPressed(){
+  if (keyCode == S_KEY ) // s key
+  {
+    savePngSerial();
+  }
+}
+
+function savePngSerial()
+{
+  // libraries
+  // https://github.com/tapioca24/p5.capture
+  // https://www.npmjs.com/package/p5snap
+  // https://editor.p5js.org/golan/sketches/qKJcoNHXX
+  // https://github.com/drskullster/p5.js-export 
+
+  // manual :
+  serial = extractSerial();
+  save(serial + ".png");
+}
+
+function extractSerial(){
+  let serial_array = [];
+  // create serial number 
+  for (let k in params) {
+    if (k.includes("Max") || k.includes("Min") || k.includes("Step") ){
+      // pass sliders definitions
+    } else if (k.includes("bgColor")) {
+      // pass color
+    } else if (params[k] == true){
+      // console.log(k + ' is ' + 1);
+      serial_array.push("1");
+    } else if (params[k] == false){
+      // console.log(k + ' is ' + 0);
+      serial_array.push("0");
+    } else {
+      // console.log(k + ' is ' + params[k]);
+      serial_array.push(str((params[k])));
+      }
+    }
+  console.log(serial_array);
+  return str(serial_array);
+}
+
+
+
 
 
 // feature beautify gui with css --> or https://openprocessing.org/sketch/872912

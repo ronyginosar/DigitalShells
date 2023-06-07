@@ -67,6 +67,8 @@ let params = {
   z_incrementMax:10,
   z_incrementStep:0.1,
 
+  isDebug3D:false,
+
 }
 
 function setup() {
@@ -85,7 +87,9 @@ function preload() {
 function draw() {
   background(255,255,255,0); 
   orbitControl();
-  // debugMode();
+  if (params.isDebug3D){
+    debugMode();
+  }
 
   if (params.fillShapeBackground){
     // run twice, once for bg
@@ -101,7 +105,11 @@ function draw() {
   strokeWeight(params.line_stroke);
 
   // calculate spiral and draw shapes using the full spiral equation
-  drawSpiralFullEquation();
+  if (params.is3D){
+    drawSpiralFullEquation3D();
+  } else {
+    drawSpiralFullEquation();
+  }
 
   if (firstLoad){
     push();
@@ -134,20 +142,11 @@ function drawSpiralFullEquation(){
   */
   w = 1;
   h = 1;
-  z = 0;
   if (params.isDrawSpiralCurve){
     beginShape();
   }
   for (let angle = 0; angle < params.cycle_degrees ; angle += params.increments) 
   {
-    if (params.is3D){  
-      z += params.z_increment;
-      // normalMaterial();
-      // z = angle/(2 * PI);
-      // -25* t/ (2 * PI)
-    } else {
-      z = 0;
-    }
     spiral_constant = params.spiral_constant; // * params.zoom; 
     // need a dummy here to not interfere with gui
     // feature make slider neg instead of flip box
@@ -173,34 +172,78 @@ function drawSpiralFullEquation(){
     [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
 
     if (params.isDrawSpiralPoints){
-      if (params.is3D){   
-        push();
-        translate(x, z, y); // in 3d y and z are flipped
-        sphere(1);
-        pop(); 
-      } else {
         point(x,y);
-      }
     }
     if (params.isDrawSpiralCurve){
-      // TODO fix
-      if (params.is3D){
-        curveVertex(x, z, y);
-      }
-      else{
-        curveVertex(x, y);
-      }
+      curveVertex(x, y);
     }
     if (params.isDrawSpiralShapes){
       // draw ellipses along log spiral curve
       // feature not only ellipse
-      if (params.is3D){
+        drawEllipseCurve(x, y, w, h);
+    }
+    increaseWH();
+  }
+  if (params.isDrawSpiralCurve){
+    endShape();
+  }
+}
+
+function drawSpiralFullEquation3D(){
+  /*
+  log spiral in radians using radius=a*exp(k*phi) 
+  exp(k*phi), the log, is the ratio of the lengths between two lines that extend out from the origin. 
+  */
+  w = 1;
+  h = 1;
+  z = 0;
+  if (params.isDrawSpiralCurve){
+    beginShape();
+  }
+  for (let angle = 0; angle < params.cycle_degrees ; angle += params.increments) 
+  {
+    z += params.z_increment;
+
+    spiral_constant = params.spiral_constant; // * params.zoom; 
+    // need a dummy here to not interfere with gui
+    // feature make slider neg instead of flip box
+
+    if (params.isShellFlipped){
+      // flip is based upon the spiral constant sign
+      spiral_constant *= -1; 
+    }
+
+    // polar slope (growth factor, rate of increase of the spiral) 
+    // polar slope angle to polar slope: k = tan(alpha)
+    // alpha is the angle between any line R from the origin and the line tangent to the spiral which is at the point where line R intersects the spiral. 
+    // alpha is a constant for any given logarithmic spiral.
+    // golden/fibonacci will be alpha = +- 17. 
+    polar_slope = tan(degreesToRadians(params.polar_slope));
+    
+    // phi the angle of rotation, is located between two lines drawn from the origin to any two points on the spiral.
+    phi = degreesToRadians(angle);
+
+    r = spiral_constant * exp(polar_slope * phi);
+
+    // log spiral in cartesian form: x=r*cos(phi)=a*e^(k*phi)*cos(phi)
+    [x,y] = locationUponLogarithmicSpiral(r, phi, flip=params.isShellDoubleFlip);
+
+    if (params.isDrawSpiralPoints){ 
+        push();
+        translate(x, z, y); // in 3d y and z are flipped
+        sphere(1);
+        pop(); 
+    }
+    if (params.isDrawSpiralCurve){
+      // TODO fix
+        curveVertex(x, z, y);
+    }
+    if (params.isDrawSpiralShapes){
+      // draw ellipses along log spiral curve
+      // feature not only ellipse
         // feature switch axis for tube?
         // drawEllipseCurve(x, y, w, h, z);
         drawEllipseCurve(x, z, w, h, y);
-      } else {
-        drawEllipseCurve(x, y, w, h);
-      }
     }
     increaseWH();
   }

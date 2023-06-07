@@ -9,7 +9,6 @@ let firstLoad = true;
 // todo make 3d more dense
 // todo make more shapes?
 // todo double/ multi shells
-// popupwindow - zoom out, s to save
 
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
@@ -75,7 +74,7 @@ function setup() {
   frameRate(10);
     pixelDensity(4.0);
 
-  gui = createGui("Digital Shells").setPosition(windowWidth*0.85,10);
+  gui = createGui("Digital Shells");//.setPosition(windowWidth*0.85,10);
   gui.addObject(params);
 }
 

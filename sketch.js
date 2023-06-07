@@ -4,7 +4,7 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 // let serial_array = [];
 let S_KEY = '83';
-let outputScale = 10/2;
+let outputScale = 15/2;
 let currentScale;
 let scaledCanvas;
 let canvas;
@@ -86,7 +86,7 @@ let params = {
 
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
-  scaledCanvas = createGraphics(windowWidth, windowHeight, WEBGL);
+  scaledCanvas = createGraphics(windowWidth, windowHeight);
   // canvas = createCanvas(800, 800, WEBGL);
   // scaledCanvas = createGraphics(800, 800, WEBGL);
   currentScale = 1; // initialize to 1; don't touch
@@ -103,12 +103,14 @@ function exportHighResolution() {
   // Scale up graphics before exporting
   // https://editor.p5js.org/golan/sketches/qKJcoNHXX
   currentScale = outputScale; // High-Res Export
-  let temp_width = windowWidth;
-  let temp_height = windowHeight;
+  let temp_width = 800;
+  let temp_height = 800;
   scaledCanvas = createGraphics(currentScale * temp_width, currentScale * temp_height, WEBGL);
   draw();
   // save(myScaledCanvas, 'hi' , 'png');
-  savePngSerial(scaledCanvas);
+  // savePngSerial(scaledCanvas);
+  serial = extractSerial();
+  save(scaledCanvas, serial+'.png');
   // save(myScaledCanvas, "highResImage", 'png');
   currentScale = 1; // Reset to default scale 1:1
   scaledCanvas = createGraphics(temp_width, temp_height, WEBGL);
@@ -125,8 +127,8 @@ function savePngSerial(canv)
   // https://github.com/drskullster/p5.js-export 
  
   // manual :
-  serial = extractSerial();
-  save(canv, serial , 'png');
+  // serial = extractSerial();
+  // save(canv, serial + ".png");
 }
 
 function extractSerial(){
@@ -155,19 +157,22 @@ function extractSerial(){
 function keyPressed(){
   if (keyCode == S_KEY ) // s key
   {
-    savePngSerial(scaledCanvas);
-    // exportHighResolution();
+    // savePngSerial(scaledCanvas);
+    exportHighResolution();
   }
 }
 
 function draw() {
   // Don't touch the contents of the draw loop!
   // Instead, modify the guts of the drawCanvas() function.
+  let temp_width = windowWidth;
+  let temp_height = windowHeight;
   scaledCanvas.clear();
   scaledCanvas.push();
   scaledCanvas.scale(currentScale);
   drawCanvas();
   scaledCanvas.pop();
+  // image(scaledCanvas, -temp_width*0.5, -temp_height*0.5, 0); // Show on the main canvas
   image(scaledCanvas, 0, 0); // Show on the main canvas
   // noLoop();
 
@@ -319,10 +324,10 @@ function drawSpiralFullEquation(){
     }
 }
 
-// dynamically adjust the canvas to the window
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
+// // dynamically adjust the canvas to the window
+// function windowResized() {
+//   resizeCanvas(windowWidth, windowHeight);
+// }
 
 function drawEllipseCurve(x, y, w, h, z=0){
   scaledCanvas.push();
@@ -342,7 +347,7 @@ function drawCanvas(){
   // noLoop(); // --> kills orbitControl
   // if(params.transparentBackground){
   background(255,255,255,0); 
-  scaledCanvas.pixelDensity(3.0);
+  scaledCanvas.pixelDensity(4.0);
   // } else {
   //   background(params.bgColor);
   // }

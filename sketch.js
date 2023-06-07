@@ -4,12 +4,19 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 // let serial_array = [];
 let S_KEY = '83';
+let outputScale = 10/2;
+let currentScale;
+let scaledCanvas;
+let canvas;
+// let WINDOWHEIGHT 
+// let WINDOWWIDTH
 
 // todo export pngs
 // todo  - can params change within the shell?
 // todo make 3d more dense
 // todo make more shapes?
 // todo double/ multi shells
+// popupwindow - zoom out, s to save
 
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
@@ -78,14 +85,38 @@ let params = {
 // }
 
 function setup() {
+  canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+  scaledCanvas = createGraphics(windowWidth, windowHeight, WEBGL);
+  // canvas = createCanvas(800, 800, WEBGL);
+  // scaledCanvas = createGraphics(800, 800, WEBGL);
+  currentScale = 1; // initialize to 1; don't touch
   frameRate(10);
-  createCanvas(windowWidth, windowHeight, WEBGL);
+
+  // createCanvas(windowWidth, windowHeight, WEBGL);
 
   gui = createGui("Digital Shells").setPosition(windowWidth*0.85,10);
   gui.addObject(params);
 }
 
-function savePngSerial()
+
+function exportHighResolution() {
+  // Scale up graphics before exporting
+  // https://editor.p5js.org/golan/sketches/qKJcoNHXX
+  currentScale = outputScale; // High-Res Export
+  let temp_width = windowWidth;
+  let temp_height = windowHeight;
+  scaledCanvas = createGraphics(currentScale * temp_width, currentScale * temp_height, WEBGL);
+  draw();
+  // save(myScaledCanvas, 'hi' , 'png');
+  savePngSerial(scaledCanvas);
+  // save(myScaledCanvas, "highResImage", 'png');
+  currentScale = 1; // Reset to default scale 1:1
+  scaledCanvas = createGraphics(temp_width, temp_height, WEBGL);
+  draw();
+}
+
+
+function savePngSerial(canv)
 {
   // libraries
   // https://github.com/tapioca24/p5.capture
@@ -95,7 +126,7 @@ function savePngSerial()
  
   // manual :
   serial = extractSerial();
-  save(serial + ".png");
+  save(canv, serial , 'png');
 }
 
 function extractSerial(){
@@ -124,37 +155,49 @@ function extractSerial(){
 function keyPressed(){
   if (keyCode == S_KEY ) // s key
   {
-    savePngSerial();
+    savePngSerial(scaledCanvas);
+    // exportHighResolution();
   }
 }
 
 function draw() {
-  // noLoop(); // --> kills orbitControl
-  // if(params.transparentBackground){
-  background(255,255,255,0); 
-  // } else {
-  //   background(params.bgColor);
+  // Don't touch the contents of the draw loop!
+  // Instead, modify the guts of the drawCanvas() function.
+  scaledCanvas.clear();
+  scaledCanvas.push();
+  scaledCanvas.scale(currentScale);
+  drawCanvas();
+  scaledCanvas.pop();
+  image(scaledCanvas, 0, 0); // Show on the main canvas
+  // noLoop();
+
+  // TEST
+  // // noLoop(); // --> kills orbitControl
+  // // if(params.transparentBackground){
+  // background(255,255,255,0); 
+  // // } else {
+  // //   background(params.bgColor);
+  // // }
+  // orbitControl();
+
+  // if (params.fillShapeBackground){
+  //   // run twice, once for bg
+  //   // feature support 3d --> no idea how yet
+  //   fill(255);
+  //   noStroke();
+  //   drawSpiralFullEquation();
   // }
-  orbitControl();
 
-  if (params.fillShapeBackground){
-    // run twice, once for bg
-    // feature support 3d --> no idea how yet
-    fill(255);
-    noStroke();
-    drawSpiralFullEquation();
-  }
+  // // settings for ellipses
+  // noFill();
+  // stroke('black');
+  // strokeWeight(params.line_stroke);
 
-  // settings for ellipses
-  noFill();
-  stroke('black');
-  strokeWeight(params.line_stroke);
+  // // calculate spiral and draw shapes using the full spiral equation
+  // drawSpiralFullEquation();
 
-  // calculate spiral and draw shapes using the full spiral equation
-  drawSpiralFullEquation();
-
-  // calculate spiral and draw shapes using the simplified spiral equation
-  // drawSpiralRadiusAngle();
+  // // calculate spiral and draw shapes using the simplified spiral equation
+  // // drawSpiralRadiusAngle();
 }
 
 function degreesToRadians(degrees){
@@ -181,7 +224,7 @@ return [x,y];
 
 function increaseWH(){
   w += params.width_increase; // * params.zoom;
-  h = w*params.height_increase; // * params.zoom;
+  h  = w*params.height_increase; // * params.zoom;
   // h += params.height_increase * params.zoom; // for linear zoom use this
 }
 
@@ -217,7 +260,7 @@ function drawSpiralFullEquation(){
   h = 1;
   z = 0;
   if (params.isDrawSpiralCurve){
-    beginShape();
+    scaledCanvas.beginShape();
   }
     for (let angle = 0;
       angle < params.cycle_degrees ;
@@ -254,16 +297,16 @@ function drawSpiralFullEquation(){
 
       if (params.isDrawSpiralPoints){
         if (params.is3D){   
-          push();
-          translate(x, y, z);
-          sphere(1);
-          pop(); 
+          scaledCanvas.push();
+          scaledCanvas.translate(x, y, z);
+          scaledCanvas.sphere(1);
+          scaledCanvas.pop(); 
         } else {
-          point(x,y);
+          scaledCanvas.point(x,y);
         }
       }
       if (params.isDrawSpiralCurve){
-        curveVertex(x, y, z);
+        scaledCanvas.curveVertex(x, y, z);
       }
       if (params.isDrawSpiralShapes){
         // draw ellipses along log spiral curve
@@ -272,7 +315,7 @@ function drawSpiralFullEquation(){
       increaseWH();
     }
     if (params.isDrawSpiralCurve){
-      endShape();
+      scaledCanvas.endShape();
     }
 }
 
@@ -282,18 +325,48 @@ function windowResized() {
 }
 
 function drawEllipseCurve(x, y, w, h, z=0){
-  push();
-  translate(x*2, y*2, z*2);
-  beginShape();
+  scaledCanvas.push();
+  scaledCanvas.translate(x*2, y*2, z*2);
+  scaledCanvas.beginShape();
   for (let t = 0; t <= 360; t+=1){
     coord_x = w * cos(degreesToRadians(t)); 
     coord_y = h * sin(degreesToRadians(t));
-    vertex(coord_x, coord_y);
+    scaledCanvas.vertex(coord_x, coord_y);
   }
-  endShape(CLOSE);
-  pop();
+  scaledCanvas.endShape(CLOSE);
+  scaledCanvas.pop();
 }
 
+
+function drawCanvas(){
+  // noLoop(); // --> kills orbitControl
+  // if(params.transparentBackground){
+  background(255,255,255,0); 
+  scaledCanvas.pixelDensity(3.0);
+  // } else {
+  //   background(params.bgColor);
+  // }
+  orbitControl();
+
+  if (params.fillShapeBackground){
+    // run twice, once for bg
+    // feature support 3d --> no idea how yet
+    scaledCanvas.fill(255);
+    scaledCanvas.noStroke();
+    drawSpiralFullEquation();
+  }
+
+  // settings for ellipses
+  scaledCanvas.noFill();
+  scaledCanvas.stroke('black');
+  scaledCanvas.strokeWeight(params.line_stroke);
+
+  // calculate spiral and draw shapes using the full spiral equation
+  drawSpiralFullEquation();
+
+  // calculate spiral and draw shapes using the simplified spiral equation
+  // drawSpiralRadiusAngle();
+}
 
 
 

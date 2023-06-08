@@ -4,7 +4,7 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 let S_KEY = '83';
 let firstLoad = true;
-var rotation_test = 0;
+var torus_rotation = 10;
 
 // todo  - can params change within the shell?
 // todo make 3d more dense
@@ -254,13 +254,14 @@ function drawSpiralFullEquation3D(){
 }
 
 function draw3DCylinder(x, y, z){
-  rotateX(degreesToRadians(10));
+  rotateX(degreesToRadians(torus_rotation));
   push();
   // drawEllipseCurve(x, y, w, h, z);
   // or
-  // normalMaterial();
-  translate(x+z, y, 0); // todo best solution for now
+  normalMaterial();
+  translate(x, y, 0);
   rotateZ(PI/2);
+  translate(0, z, 0);
   // cylinder(w, 1, 24, 1, false, false);
   // cone(h, w, 24, 10, false);
   torus(w,params.line_stroke);

@@ -4,12 +4,9 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 let S_KEY = '83';
 let firstLoad = true;
-// var torus_rotation = 10;
 
-// todo  - can params change within the shell?
-// todo make 3d more dense
-// todo make more shapes?
-// todo double/ multi shells
+// todo fix points along new 3d torus approach
+
 
 let params = {
   // https://github.com/bitcraftlab/p5.gui/tree/master
@@ -260,7 +257,7 @@ function drawSpiralFullEquation3D(){
 }
 
 function draw3DCylinder(x, y, z){
-  rotateX(degreesToRadians(params.torus_rotation));
+  rotateX(degreesToRadians(params.torus_rotation)); // default 10
   push();
   // drawEllipseCurve(x, y, w, h, z);
   // or
@@ -402,7 +399,6 @@ function drawPerlinRing(){
 }
 
 
-
 // feature beautify gui with css --> or https://openprocessing.org/sketch/872912
 // feature colors of shape
 // feature ellipseMode(CORNER)
@@ -411,4 +407,5 @@ function drawPerlinRing(){
 // feature don't orbitzoom on the gui...
 // feature:: use this gui https://kentskyo.com/high-resolution-sketches-with-p5js/
 // feature not only ellipse for both 2d and 3d -> https://codepen.io/shrirambo/pen/qGoMzN
-
+// feature  - can params change within the shell?
+// feature double/ multi shells

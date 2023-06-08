@@ -233,25 +233,18 @@ function drawSpiralFullEquation3D(){
 
     if (params.isDrawSpiralPoints){ 
         push();
-        translate(x, z, y); // in 3d y and z are flipped
+        translate(x, y, z); // in 3d y and z are flipped
         sphere(1);
         pop(); 
     }
     if (params.isDrawSpiralCurve){
       // TODO fix this when is paired with ellipse shape - probably the double "begin-end-shape"
-        curveVertex(x, z, y);
+        curveVertex(x, y, z);
     }
     if (params.isDrawSpiralShapes){
-      // draw ellipses along log spiral curve
+      // draw cylinders along log spiral curve
       // feature not only ellipse
-        // feature switch axis for tube?
-        // drawEllipseCurve(x, y, w, h, z);
-        // drawEllipseCurve(x, z, w, h, y);
-        push();
-        translate(x, z, y);
-        rotateZ(PI/2);
-        cylinder(10, 3, 24, 1, false, false);
-        pop();
+      draw3DCylinder(x, y, z);
     }
     increaseWH();
   }
@@ -259,6 +252,21 @@ function drawSpiralFullEquation3D(){
     endShape();
   }
 }
+
+function draw3DCylinder(x, y, z){
+  push();
+  // drawEllipseCurve(x, y, w, h, z);
+  // or
+  translate(x, y, z);
+  rotateZ(PI/2);
+  // rotateY(degreesToRadians(90));
+  // rotateX(degreesToRadians(90));
+  fill(255); // https://hiralparekhdesign.com/p5js-sketches
+  cylinder(w, h, 24, 1, false, false);
+  // cone(h, w, 24, 10, false);
+  pop();
+}
+
 
 function drawEllipseCurve(x, y, w, h, z=0){
   // https://undergroundmathematics.org/glossary/ellipse#:~:text=The%20Cartesian%20equation%20of%20an,t)%3Dbsint.

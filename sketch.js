@@ -87,15 +87,6 @@ function preload() {
 function draw() {
   background(255,255,255,0); 
   orbitControl();
-  
-
-  if (params.fillShapeBackground){
-    // run twice, once for bg
-    // feature support 3d --> no idea how yet
-    fill(255);
-    noStroke();
-    drawSpiralFullEquation();
-  }
 
   // settings for ellipses
   noFill();
@@ -104,8 +95,17 @@ function draw() {
 
   // calculate spiral and draw shapes using the full spiral equation
   if (params.is3D){
+    if (params.fillShapeBackground){
+      fill(255);  // https://hiralparekhdesign.com/p5js-sketches
+    }
     drawSpiralFullEquation3D();
   } else {
+    if (params.fillShapeBackground){
+      // run twice, once for bg
+      fill(255);
+      noStroke();
+      drawSpiralFullEquation();
+    }
     drawSpiralFullEquation();
   }
 
@@ -243,7 +243,6 @@ function drawSpiralFullEquation3D(){
     }
     if (params.isDrawSpiralShapes){
       // draw cylinders along log spiral curve
-      // feature not only ellipse
       draw3DCylinder(x, y, z);
     }
     increaseWH();
@@ -261,7 +260,6 @@ function draw3DCylinder(x, y, z){
   rotateZ(PI/2);
   // rotateY(degreesToRadians(90));
   // rotateX(degreesToRadians(90));
-  fill(255); // https://hiralparekhdesign.com/p5js-sketches
   cylinder(w, h, 24, 1, false, false);
   // cone(h, w, 24, 10, false);
   pop();
@@ -402,4 +400,4 @@ function drawPerlinRing(){
 // feature Curvature = cos(alfa)/r
 // feature don't orbitzoom on the gui...
 // feature:: use this gui https://kentskyo.com/high-resolution-sketches-with-p5js/
-
+// feature not only ellipse for both 2d and 3d

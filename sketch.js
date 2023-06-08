@@ -4,7 +4,7 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 let S_KEY = '83';
 let firstLoad = true;
-var torus_rotation = 10;
+// var torus_rotation = 10;
 
 // todo  - can params change within the shell?
 // todo make 3d more dense
@@ -69,6 +69,11 @@ let params = {
   z_incrementStep:0.1,
 
   isDebug3D:false,
+
+  torus_rotation: 10,
+  torus_rotationMin:1,
+  torus_rotationMax:20,
+  torus_rotationStep:1,
 
 }
 
@@ -179,6 +184,8 @@ function drawSpiralFullEquation(){
         point(x,y);
     }
     if (params.isDrawSpiralCurve){
+      // TODO fix this when is paired with ellipse shape - probably the double "begin-end-shape"
+
       curveVertex(x, y);
     }
     if (params.isDrawSpiralShapes){
@@ -239,7 +246,6 @@ function drawSpiralFullEquation3D(){
         pop(); 
     }
     if (params.isDrawSpiralCurve){
-      // TODO fix this when is paired with ellipse shape - probably the double "begin-end-shape"
         curveVertex(x, y, z);
     }
     if (params.isDrawSpiralShapes){
@@ -254,11 +260,11 @@ function drawSpiralFullEquation3D(){
 }
 
 function draw3DCylinder(x, y, z){
-  rotateX(degreesToRadians(torus_rotation));
+  rotateX(degreesToRadians(params.torus_rotation));
   push();
   // drawEllipseCurve(x, y, w, h, z);
   // or
-  normalMaterial();
+  // normalMaterial();
   translate(x, y, 0);
   rotateZ(PI/2);
   translate(0, z, 0);

@@ -246,7 +246,12 @@ function drawSpiralFullEquation3D(){
       // feature not only ellipse
         // feature switch axis for tube?
         // drawEllipseCurve(x, y, w, h, z);
-        drawEllipseCurve(x, z, w, h, y);
+        // drawEllipseCurve(x, z, w, h, y);
+        push();
+        translate(x, z, y);
+        rotateZ(PI/2);
+        cylinder(10, 3, 24, 1, false, false);
+        pop();
     }
     increaseWH();
   }

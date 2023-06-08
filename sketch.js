@@ -257,7 +257,7 @@ function drawSpiralFullEquation3D(){
 }
 
 function draw3DCylinder(x, y, z){
-  rotateX(degreesToRadians(params.torus_rotation)); // default 10
+  rotateX(degreesToRadians(params.torus_rotation)); // default 10 // todo this messes the rest of the shape drawing
   push();
   // drawEllipseCurve(x, y, w, h, z);
   // or

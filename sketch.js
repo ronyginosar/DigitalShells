@@ -5,7 +5,8 @@ var gui_3d; // double click to disappear gui
 let S_KEY = '83';
 let firstLoad = true;
 
-// todo fix points along new 3d torus approach
+// todo fix points & curve z along new 3d torus approach
+// todo fix curve when is paired with ellipse shape - probably the double "begin-end-shape"
 
 
 let params = {
@@ -182,13 +183,11 @@ function drawSpiralFullEquation(){
     }
     if (params.isDrawSpiralCurve){
       // TODO fix this when is paired with ellipse shape - probably the double "begin-end-shape"
-
       curveVertex(x, y);
     }
     if (params.isDrawSpiralShapes){
       // draw ellipses along log spiral curve
-      // feature not only ellipse
-        drawEllipseCurve(x, y, w, h);
+      drawEllipseCurve(x, y, w, h);
     }
     increaseWH();
   }
@@ -281,10 +280,9 @@ function drawEllipseCurve(x, y, w, h, z=0){
   for (let t = 0; t <= 360; t+=1){
     coord_x = w * cos(degreesToRadians(t)); 
     coord_y = h * sin(degreesToRadians(t));
-    // todo can I say what plane this is on? instead of normal...
     vertex(coord_x, coord_y);
   }
-  endShape(CLOSE);
+  endShape();
   pop();
 }
 
@@ -405,7 +403,12 @@ function drawPerlinRing(){
 // feature "ismobile" https://p5js.org/reference/#/p5/deviceMoved
 // feature Curvature = cos(alfa)/r
 // feature don't orbitzoom on the gui...
-// feature:: use this gui https://kentskyo.com/high-resolution-sketches-with-p5js/
+// feature: use this gui https://kentskyo.com/high-resolution-sketches-with-p5js/
 // feature not only ellipse for both 2d and 3d -> https://codepen.io/shrirambo/pen/qGoMzN
 // feature  - can params change within the shell?
 // feature double/ multi shells
+
+// make particles / p5.graphics?
+// https://p5js.org/es/learn/getting-started-in-webgl-coords-and-transform.html
+// https://p5js.org/es/learn/getting-started-in-webgl-custom-geometry.html
+

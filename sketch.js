@@ -87,9 +87,7 @@ function preload() {
 function draw() {
   background(255,255,255,0); 
   orbitControl();
-  if (params.isDebug3D){
-    debugMode();
-  }
+  
 
   if (params.fillShapeBackground){
     // run twice, once for bg
@@ -131,6 +129,11 @@ function draw() {
     pop();
   }
 
+  if (params.isDebug3D){
+    debugMode();
+  } else {
+    noDebugMode();
+  }
   // noLoop(); // --> kills orbitControl
 }
 
@@ -235,7 +238,7 @@ function drawSpiralFullEquation3D(){
         pop(); 
     }
     if (params.isDrawSpiralCurve){
-      // TODO fix
+      // TODO fix this when is paired with ellipse shape - probably the double "begin-end-shape"
         curveVertex(x, z, y);
     }
     if (params.isDrawSpiralShapes){
@@ -260,6 +263,7 @@ function drawEllipseCurve(x, y, w, h, z=0){
   for (let t = 0; t <= 360; t+=1){
     coord_x = w * cos(degreesToRadians(t)); 
     coord_y = h * sin(degreesToRadians(t));
+    // todo can I say what plane this is on? instead of normal...
     vertex(coord_x, coord_y);
   }
   endShape(CLOSE);

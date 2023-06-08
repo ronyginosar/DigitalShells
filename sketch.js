@@ -4,6 +4,7 @@ var gui; // double click to disappear gui
 var gui_3d; // double click to disappear gui
 let S_KEY = '83';
 let firstLoad = true;
+var rotation_test = 0;
 
 // todo  - can params change within the shell?
 // todo make 3d more dense
@@ -253,16 +254,18 @@ function drawSpiralFullEquation3D(){
 }
 
 function draw3DCylinder(x, y, z){
+  rotateX(degreesToRadians(10));
   push();
   // drawEllipseCurve(x, y, w, h, z);
   // or
-  translate(x, y, z);
+  // normalMaterial();
+  translate(x+z, y, 0); // todo best solution for now
   rotateZ(PI/2);
-  // rotateY(degreesToRadians(90));
-  // rotateX(degreesToRadians(90));
-  cylinder(w, h, 24, 1, false, false);
+  // cylinder(w, 1, 24, 1, false, false);
   // cone(h, w, 24, 10, false);
+  torus(w,params.line_stroke);
   pop();
+
 }
 
 
@@ -400,4 +403,5 @@ function drawPerlinRing(){
 // feature Curvature = cos(alfa)/r
 // feature don't orbitzoom on the gui...
 // feature:: use this gui https://kentskyo.com/high-resolution-sketches-with-p5js/
-// feature not only ellipse for both 2d and 3d
+// feature not only ellipse for both 2d and 3d -> https://codepen.io/shrirambo/pen/qGoMzN
+
